@@ -10,6 +10,9 @@
 	<noscript>
 		<link rel="stylesheet" href="assets/css/noscript.css" />
 	</noscript>
+	<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+	<meta name="msapplication-TileColor" content="#ffffff">
+	<meta name="theme-color" content="#ffffff">
 </head>
 
 <body class="is-preload">
@@ -177,16 +180,18 @@
 					<li class="icon solid fa-home">
 						MAYAM<br />
 						Blvd Quetzalcoatl 440, Ecatepec de Morelos Estado de México c.p 55120<br />
-					
+
 					</li>
 					<li class="icon solid fa-phone">(+52) 56 1501 6936 </li>
 					<li class="icon solid fa-envelope"><a href="mailto:nestor@mayam.lat">nestor@mayam.lat</a></li>
-					<li class="icon brands fa-facebook-f"><a href="https://www.facebook.com/mayamlat">facebook.com/mayamlat</a></li>
-					<li class="icon brands fa-linkedin"><a href="https://www.linkedin.com/in/nestor-yzmaya/">linkedin.com/in/nestor-yzmaya</a></li>
+					<li class="icon brands fa-facebook-f"><a
+							href="https://www.facebook.com/mayamlat">facebook.com/mayamlat</a></li>
+					<li class="icon brands fa-linkedin"><a
+							href="https://www.linkedin.com/in/nestor-yzmaya/">linkedin.com/in/nestor-yzmaya</a></li>
 				</ul>
 				<ul class="copyright">
 					<li>&copy; MAYAM. All rights reserved.</li>
-			
+
 				</ul>
 			</div>
 		</section>
@@ -210,22 +215,22 @@
 			})
 				.then(response => response.text())
 				.then(data => {
-					document.getElementById('nombre').value = '';
-					document.getElementById('correo').value = '';
-					document.getElementById('mensaje').value = '';
+					document.getElementById('name').value = '';
+					document.getElementById('email').value = '';
+					document.getElementById('message').value = '';
 					// Muestra el mensaje de alerta
 					console.log('envio exitoso');
 				})
-				.catch (error => {
+				.catch(error => {
 					// Limpia los campos del formulario
-					document.getElementById('nombre').value = '';
-					document.getElementById('correo').value = '';
-					document.getElementById('mensaje').value = '';
+					document.getElementById('name').value = '';
+					document.getElementById('email').value = '';
+					document.getElementById('message').value = '';
 
 					// Muestra el mensaje de alerta
 					alert('Gracias, nos comunicaremos en breve');
 				});
-			});
+		});
 	</script>
 	<script src="assets/js/jquery.min.js"></script>
 	<script src="assets/js/jquery.scrollex.min.js"></script>
