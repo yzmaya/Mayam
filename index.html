@@ -210,6 +210,13 @@
 			})
 				.then(response => response.text())
 				.then(data => {
+					document.getElementById('nombre').value = '';
+					document.getElementById('correo').value = '';
+					document.getElementById('mensaje').value = '';
+					// Muestra el mensaje de alerta
+					console.log('envio exitoso');
+				})
+				.catch (error => {
 					// Limpia los campos del formulario
 					document.getElementById('nombre').value = '';
 					document.getElementById('correo').value = '';
@@ -217,8 +224,7 @@
 
 					// Muestra el mensaje de alerta
 					alert('Gracias, nos comunicaremos en breve');
-				})
-				.catch (error => console.log('Hubo un error al enviar el mensaje.'));
+				});
 			});
 	</script>
 	<script src="assets/js/jquery.min.js"></script>
