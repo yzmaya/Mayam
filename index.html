@@ -222,29 +222,42 @@
           soluciones personalizadas y la última tecnología en inteligencia
           artificial, estamos aquí para ayudarte. Contáctanos a través de:
         </p>
-        <form method="post"
-          action="https://script.google.com/macros/s/AKfycbw-gQv5h6jd_kq-Yw9crdRcxWPzZvqRTuyTbfx11hgceSorOaN21jXuI5yo_mzP-gwFPA/exec"
-          id="contactForm">
-          <div class="fields">
-            <div class="field">
-              <label for="name">Nombre</label>
-              <input type="text" name="name" id="name" />
-            </div>
-            <div class="field">
-              <label for="email">Correo electrónico</label>
-              <input type="email" name="email" id="email" />
-            </div>
-            <div class="field">
-              <label for="message">Mensaje</label>
-              <textarea name="message" id="message" rows="4"></textarea>
-            </div>
-     
+       
+       <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+  <script>
+    (function() {
+      emailjs.init("YYbhucYKnVXZTKRln"); // Reemplaza con tu User ID real
+    })();
+  </script>
+</head>
+<body>
+  <form id="contactForm">
+    <label>Nombre</label>
+    <input type="text" name="name" required />
 
-          </div>
-          <ul class="actions">
-            <li><input type="submit" value="Enviar" /></li>
-          </ul>
-        </form>
+    <label>Correo electrónico</label>
+    <input type="email" name="email" required />
+
+    <label>Mensaje</label>
+    <textarea name="message" required></textarea>
+
+    <button type="submit">Enviar</button>
+  </form>
+
+  <script>
+    document.getElementById("contactForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      emailjs.sendForm("service_66v06jm", "template_8uuxr4i", this)
+        .then(function() {
+          alert("Mensaje enviado con éxito.");
+          document.getElementById("contactForm").reset();
+        }, function(error) {
+          alert("Error al enviar el mensaje: " + error.text);
+        });
+    });
+  </script>
+
         <ul class="contact">
           <li class="icon solid fa-home">
             MAYAM<br />
@@ -270,38 +283,6 @@
   </div>
 
 
- <script src="https://www.google.com/recaptcha/api.js?render=6LeQKXErAAAAAP9oGkQizA5MWOAZGVciM59VHrmu"></script>
-  <script>
-    document.getElementById("contactForm").addEventListener("submit", function (e) {
-      e.preventDefault();
-
-      grecaptcha.ready(function () {
-        grecaptcha.execute("6LeQKXErAAAAAP9oGkQizA5MWOAZGVciM59VHrmu", { action: "submit" }).then(function (token) {
-          const form = document.getElementById("contactForm");
-          const tokenInput = document.createElement("input");
-          tokenInput.setAttribute("type", "hidden");
-          tokenInput.setAttribute("name", "recaptcha_token");
-          tokenInput.setAttribute("value", token);
-          form.appendChild(tokenInput);
-
-          fetch(form.action, {
-            method: "POST",
-            body: new FormData(form),
-          })
-          .then(response => response.text())
-          .then(data => {
-            alert("Gracias, tu mensaje fue enviado correctamente.");
-            form.reset();
-          })
-          .catch(error => {
-            alert("Ocurrió un error al enviar el mensaje.");
-            console.error("Error en el envío", error);
-          });
-        });
-      });
-    });
-  </script>
-  <!-- Scripts -->
   <script>
     document
       .getElementById("contactForm")
