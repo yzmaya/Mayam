@@ -288,13 +288,7 @@
       .getElementById("contactForm")
       .addEventListener("submit", function (e) {
         e.preventDefault();
-        // Honeypot check
-        const honeypot = document.getElementById("honeypot").value;
-        if (honeypot !== "") {
-          console.warn("Bot detectado, envío cancelado");
-          return; // Bot detected, don't send
-        }
-
+     
         var data = {
           nombre: document.getElementById("name").value,
           correo: document.getElementById("email").value,
