@@ -5,11 +5,14 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <title>Tecpan - Traducción en Whatsapp</title>
-  <meta name="description" content="Tecpan es la herramienta inteligente para traducir y transcribir notas de voz en tiempo real usando WhatsApp y Telegram. Ideal para escuelas de idiomas, viajeros y profesionales globales.">
-  <meta name="keywords" content="traducción de voz, transcripción de WhatsApp, notas de voz, traducción IA, Tecpan, herramienta lingüística, comunicación sin barreras, WhatsApp bot, transcripción automatizada, idiomas">
+  <meta name="description"
+    content="Tecpan es la herramienta inteligente para traducir y transcribir notas de voz en tiempo real usando WhatsApp y Telegram. Ideal para escuelas de idiomas, viajeros y profesionales globales.">
+  <meta name="keywords"
+    content="traducción de voz, transcripción de WhatsApp, notas de voz, traducción IA, Tecpan, herramienta lingüística, comunicación sin barreras, WhatsApp bot, transcripción automatizada, idiomas">
   <meta name="author" content="Tecpan AI">
   <meta property="og:title" content="Tecpan - Traducción y Transcripción en WhatsApp">
-  <meta property="og:description" content="Traduce y transcribe audios directamente en tus grupos de WhatsApp. Sin apps, sin complicaciones. Conéctate globalmente en segundos.">
+  <meta property="og:description"
+    content="Traduce y transcribe audios directamente en tus grupos de WhatsApp. Sin apps, sin complicaciones. Conéctate globalmente en segundos.">
   <meta property="og:image" content="assets/img/tecpanlogo..png">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://tecpan.ai">
@@ -18,7 +21,11 @@
     body {
       font-family: 'Inter', sans-serif;
     }
-    h1, h2, h3, h4 {
+
+    h1,
+    h2,
+    h3,
+    h4 {
       font-family: 'Poppins', sans-serif;
     }
   </style>
@@ -30,7 +37,9 @@
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com" rel="preconnect">
   <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+    rel="stylesheet">
 
   <!-- Vendor CSS Files -->
   <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -59,7 +68,7 @@
 
       <a href="index.html" class="logo d-flex align-items-center">
         <!-- Uncomment the line below if you also wish to use an image logo -->
-    <img src="assets/img/tecpanlogo.png" alt="Logo Tecpan"> 
+        <img src="assets/img/tecpanlogo.png" alt="Logo Tecpan">
         <h1 class="sitename">Tecpan</h1>
       </a>
 
@@ -74,6 +83,19 @@
       </nav>
 
     </div>
+    <div class="language-selector dropdown">
+      <button class="btn btn-light dropdown-toggle" type="button" id="dropdownLang" data-bs-toggle="dropdown"
+        aria-expanded="false">
+        🌐 Español
+      </button>
+      <ul class="dropdown-menu" aria-labelledby="dropdownLang">
+        <li><a class="dropdown-item" href="?lang=en">English</a></li>
+        <li><a class="dropdown-item" href="?lang=nl">Nederlands</a></li>
+        <li><a class="dropdown-item" href="?lang=fr">Français</a></li>
+        <li><a class="dropdown-item" href="?lang=es">Español</a></li>
+      </ul>
+    </div>
+
   </header>
 
   <main class="main">
@@ -87,7 +109,8 @@
         <div class="carousel-item active">
           <div class="carousel-container">
             <h2 class="animate__animated animate__fadeInDown">Comunicación sin barreras </h2>
-            <p class="animate__animated animate__fadeInUp">Traduce y transcribe notas de voz directamente en tus grupos de WhatsApp</p>
+            <p class="animate__animated animate__fadeInUp">Traduce y transcribe notas de voz directamente en tus grupos
+              de WhatsApp</p>
             <a href="#about" class="btn-get-started animate__animated animate__fadeInUp scrollto">Comenzar</a>
           </div>
         </div>
@@ -95,7 +118,8 @@
         <!-- Slide 2 -->
         <div class="carousel-item">
           <div class="carousel-container">
-            <h2 class="animate__animated animate__fadeInDown">Traduce y transcribe notas de voz directamente en tus grupos de WhatsApp</h2>
+            <h2 class="animate__animated animate__fadeInDown">Traduce y transcribe notas de voz directamente en tus
+              grupos de WhatsApp</h2>
             <p class="animate__animated animate__fadeInUp">Sin apps, sin complicaciones. Escanea un QR y comienza.</p>
             <a href="#about" class="btn-get-started animate__animated animate__fadeInUp scrollto">Comenzar</a>
           </div>
@@ -120,7 +144,8 @@
 
       </div>
 
-      <svg class="hero-waves" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28 " preserveAspectRatio="none">
+      <svg class="hero-waves" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+        viewBox="0 24 150 28 " preserveAspectRatio="none">
         <defs>
           <path id="wave-path" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z"></path>
         </defs>
@@ -144,13 +169,16 @@
 
         <div class="row position-relative">
 
-          <div class="col-lg-7 about-img" data-aos="zoom-out" data-aos-delay="200"><img src="assets/img/audiowhatsapp.webp"></div>
+          <div class="col-lg-7 about-img" data-aos="zoom-out" data-aos-delay="200"><img
+              src="assets/img/audiowhatsapp.webp"></div>
 
           <div class="col-lg-7" data-aos="fade-up" data-aos-delay="100">
             <h2 class="inner-title">¿Que es Tecpan?</h2>
             <div class="our-story">
               <h4>Potenciamos tu comunicación con inteligencia artificial en tiempo real</h4>
-              <p>A diferencia de otras soluciones, Tecpan sí funciona en grupos de WhatsApp. Solo escanea un código QR para vincularte al asistente, sin descargar ni instalar nada. Ideal para escuelas, agencias, o comunidades internacionales.</p>
+              <p>A diferencia de otras soluciones, Tecpan sí funciona en grupos de WhatsApp. Solo escanea un código QR
+                para vincularte al asistente, sin descargar ni instalar nada. Ideal para escuelas, agencias, o
+                comunidades internacionales.</p>
               <ul>
                 <li><i class="bi bi-check-circle"></i> <span>Transcribe y traduce en tiempo real</span></li>
                 <li><i class="bi bi-check-circle"></i> <span>Fácil integración</span></li>
@@ -158,7 +186,7 @@
               </ul>
               <p>Hacemos uso de la inteligencia artificial para que tu transcripción y traducción sean precisas.</p>
 
-          <!--    <div class="watch-video d-flex align-items-center position-relative">
+              <!--    <div class="watch-video d-flex align-items-center position-relative">
                 <i class="bi bi-play-circle"></i>
                 <a href="https://www.youtube.com/watch?v=Y7f98aduVJ8" class="glightbox stretched-link">Video demostrativo</a>
               </div>-->
@@ -214,7 +242,7 @@
       <!-- Section Title -->
       <div class="container section-title" data-aos="fade-up">
         <h2>Características</h2>
-      
+
       </div><!-- End Section Title -->
 
       <div class="container">
@@ -360,9 +388,9 @@
             </div>
           </div>
         -->
-        </div>
+    </div>
 
-      </div>
+    </div>
 
     </section><!-- /Services Section -->
 
@@ -391,7 +419,8 @@
       <!-- Section Title -->
       <div class="container section-title" data-aos="fade-up">
         <h2>Planes</h2>
-        <p>Todos los planes permiten uso en grupos de WhatsApp y no requieren instalación. Vinculación sencilla por código QR.</p>
+        <p>Todos los planes permiten uso en grupos de WhatsApp y no requieren instalación. Vinculación sencilla por
+          código QR.</p>
       </div><!-- End Section Title -->
 
       <div class="container" data-aos="zoom-in" data-aos-delay="100">
@@ -401,8 +430,9 @@
 
           <div class="col-lg-4">
             <div class="pricing-item">
-              </div></div>
-<!--
+            </div>
+          </div>
+          <!--
           <div class="col-lg-4">
             <div class="pricing-item">
               <h3>Free Plan</h3>
@@ -441,13 +471,14 @@
               <div class="text-center"><a href="https://t.ly/Tmp" class="buy-btn">Comprar ahora</a></div>
             </div>
           </div>
-          
+
           <div class="col-lg-4">
             <div class="pricing-item">
-              </div></div>
-          
+            </div>
+          </div>
+
           <!-- End Pricing Item -->
-<!--
+          <!--
           <div class="col-lg-4">
             <div class="pricing-item">
               <h3>Developer Plan</h3>
@@ -480,7 +511,7 @@
       <!-- Section Title -->
       <div class="container section-title" data-aos="fade-up">
         <h2>Preguntas frecuentes</h2>
-   
+
       </div><!-- End Section Title -->
 
       <div class="container">
@@ -494,7 +525,8 @@
               <div class="faq-item faq-active">
                 <h3>¿Puedo usarlo en mis grupos de WhatsApp?</h3>
                 <div class="faq-content">
-                  <p>Sí. A diferencia de otros servicios, Tecpan está diseñado para trabajar dentro de tus grupos. No necesitas reenviar audios ni salir del chat.</p>
+                  <p>Sí. A diferencia de otros servicios, Tecpan está diseñado para trabajar dentro de tus grupos. No
+                    necesitas reenviar audios ni salir del chat.</p>
                 </div>
                 <i class="faq-toggle bi bi-chevron-right"></i>
               </div><!-- End Faq item-->
@@ -502,7 +534,8 @@
               <div class="faq-item">
                 <h3>¿Cómo me conecto?</h3>
                 <div class="faq-content">
-                  <p>Solo escanea un código QR con tu WhatsApp y listo. No necesitas instalar ninguna app o crear cuentas adicionales.</p>
+                  <p>Solo escanea un código QR con tu WhatsApp y listo. No necesitas instalar ninguna app o crear
+                    cuentas adicionales.</p>
                 </div>
                 <i class="faq-toggle bi bi-chevron-right"></i>
               </div><!-- End Faq item-->
@@ -510,7 +543,8 @@
               <div class="faq-item">
                 <h3>¿Si yo mando notas de voz, les llega en su idioma nativo?</h3>
                 <div class="faq-content">
-                  <p>No, solo aplica para cuando te manden notas de voz, tu obtengas su traducción o transcripción en caso de que te la manden en tu mismo idioma.</p>
+                  <p>No, solo aplica para cuando te manden notas de voz, tu obtengas su traducción o transcripción en
+                    caso de que te la manden en tu mismo idioma.</p>
                 </div>
                 <i class="faq-toggle bi bi-chevron-right"></i>
               </div><!-- End Faq item-->
@@ -523,9 +557,9 @@
                 <i class="faq-toggle bi bi-chevron-right"></i>
               </div><!-- End Faq item-->
 
-       
 
-          
+
+
 
             </div>
 
@@ -536,7 +570,7 @@
       </div>
 
     </section>
-    
+
     <!-- /Faq Section 
 
    
@@ -616,7 +650,7 @@
     </section>
   
   -->
-<!-- Gallery Section 
+    <!-- Gallery Section 
     <section id="gallery" class="gallery section">
 
     
@@ -695,9 +729,9 @@
           
           End Gallery Item -->
 
-        </div>
+    </div>
 
-      </div>
+    </div>
 
     </section><!-- /Gallery Section -->
 
@@ -742,7 +776,10 @@
           </div>
 
           <div class="col-lg-8">
-            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3761.804547928788!2d-99.05969552611384!3d19.463991939680227!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85d1fba081d11ba5%3A0x3a20be5e8b41c081!2sVilla%20Cacama%2018%2C%20Villa%20de%20Arag%C3%B3n%2C%20Gustavo%20A.%20Madero%2C%2007570%20Ciudad%20de%20M%C3%A9xico%2C%20CDMX!5e0!3m2!1ses!2smx!4v1744068842791!5m2!1ses!2smx" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3761.804547928788!2d-99.05969552611384!3d19.463991939680227!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85d1fba081d11ba5%3A0x3a20be5e8b41c081!2sVilla%20Cacama%2018%2C%20Villa%20de%20Arag%C3%B3n%2C%20Gustavo%20A.%20Madero%2C%2007570%20Ciudad%20de%20M%C3%A9xico%2C%20CDMX!5e0!3m2!1ses!2smx!4v1744068842791!5m2!1ses!2smx"
+              width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"></iframe>
           </div><!-- End Contact Form -->
 
         </div>
@@ -770,13 +807,14 @@
         <div class="copyright">
           <span>Copyright</span> <strong class="px-1 sitename">Tecpan</strong> <span>All Rights Reserved</span>
         </div>
-    
+
       </div>
     </div>
   </footer>
 
   <!-- Scroll Top -->
-  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i
+      class="bi bi-arrow-up-short"></i></a>
 
   <!-- Preloader -->
   <div id="preloader"></div>
