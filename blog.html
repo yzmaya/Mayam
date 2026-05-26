@@ -121,6 +121,7 @@ function normalizeDbPost(p) {
     readTime: `${p.read_time_minutes || 3} min de lectura`,
     image: p.image_url || '',
     featured: p.featured,
+    slug: p.slug || '',
     content: Array.isArray(p.content) ? p.content : [],
   };
 }
@@ -131,6 +132,7 @@ const { useEffect, useState, useRef } = React;
 const FALLBACK_POSTS = [
   {
     id: 1,
+    slug: 'fallo-musk-openai-seguridad-juridica-hitos-financieros-ia',
     category: 'IA & Legal',
     categoryIcon: 'scale',
     title: 'Implicaciones del fallo Musk vs. OpenAI: Seguridad jurídica e hitos financieros en la industria de la IA ⚖️📈',
@@ -153,6 +155,7 @@ const FALLBACK_POSTS = [
   },
   {
     id: 2,
+    slug: 'gemini-omni-google-deepmind-produccion-multimodal',
     category: 'Herramientas de IA',
     categoryIcon: 'cpu',
     title: 'El punto de inflexión en la economía creativa: Google DeepMind presenta Gemini Omni y redefine la producción multimodal 📈🌐',
@@ -176,6 +179,7 @@ const FALLBACK_POSTS = [
   },
   {
     id: 3,
+    slug: 'liderazgo-equidad-nuevo-estandar-ecosistema-ia',
     category: 'Liderazgo & Ética',
     categoryIcon: 'heart-handshake',
     title: 'Liderazgo y Equidad: El nuevo estándar en el ecosistema de la IA',
@@ -407,9 +411,12 @@ function BlogModal({ post, onClose }) {
               Contactar a MAYAM
               <i data-lucide="arrow-right" style={{ width: 16, height: 16 }}></i>
             </a>
-            <button onClick={onClose} className="btn btn-secondary">
-              Seguir leyendo
-            </button>
+            {post.slug
+              ? <a href={`blog/post.html?slug=${post.slug}`} className="btn btn-secondary">
+                  Ver artículo completo <i data-lucide="external-link" style={{ width: 14, height: 14 }}></i>
+                </a>
+              : <button onClick={onClose} className="btn btn-secondary">Cerrar</button>
+            }
           </div>
         </div>
       </div>
@@ -663,6 +670,14 @@ function BlogSection() {
   const [openPost, setOpenPost] = useState(null);
   const [query, setQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('Todos');
+
+  function handleReadMore(post) {
+    if (post.slug) {
+      window.location.href = `blog/post.html?slug=${post.slug}`;
+    } else {
+      setOpenPost(post);
+    }
+  }
   const [posts, setPosts] = useState(FALLBACK_POSTS);
   const [loading, setLoading] = useState(true);
 
@@ -721,12 +736,12 @@ function BlogSection() {
             <div>
               {featured && (
                 <div style={{ marginBottom: 48 }}>
-                  <BlogCard post={featured} featured onOpen={setOpenPost} />
+                  <BlogCard post={featured} featured onOpen={handleReadMore} />
                 </div>
               )}
               {rest.length > 0 && (
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 28 }}>
-                  {rest.map(post => <BlogCard key={post.id} post={post} onOpen={setOpenPost} />)}
+                  {rest.map(post => <BlogCard key={post.id} post={post} onOpen={handleReadMore} />)}
                 </div>
               )}
             </div>

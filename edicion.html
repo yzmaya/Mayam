@@ -90,6 +90,119 @@ function extractKeywords(title, excerpt, content, category) {
   return Object.entries(freq).sort((a,b) => b[1]-a[1]).slice(0,15).map(([w]) => w);
 }
 
+function generatePostHTML(form, keywords) {
+  if (!keywords) keywords = [];
+  const slug     = form.slug || generateSlug(form.title);
+  const rt       = form.read_time_minutes || calcReadTime(form.content);
+  const metaT    = (form.meta_title || form.title || '').slice(0, 60);
+  const metaD    = (form.meta_description || form.excerpt || '').slice(0, 160);
+  const kwStr    = (form.meta_keywords && form.meta_keywords.length ? form.meta_keywords : keywords).join(', ');
+  const dateIso  = form.published_at || new Date().toISOString();
+  const dateDisp = new Date(dateIso).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' });
+  const imgUrl   = form.image_url || form.og_image || 'https://mayam.lat/assets/og-image.png';
+  const category = form.category || 'General';
+  const catIcon  = form.category_icon || CATEGORY_ICONS[form.category] || 'file-text';
+  const author   = form.author_name || 'MAYAM';
+  const geoR     = form.geo_region || 'MX-CMX';
+  const geoP     = form.geo_placename || 'Ciudad de México, México';
+  const geoPos   = form.geo_position || '19.4326,-99.1332';
+  const geoPosH  = geoPos.replace(',', ';');
+
+  const postData = JSON.stringify({
+    slug, category, categoryIcon: catIcon,
+    title: form.title, excerpt: form.excerpt || '',
+    author, date: dateDisp, readTime: rt + ' min de lectura',
+    image: imgUrl, content: form.content || [],
+  }, null, 2);
+
+  const esc = s => String(s || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const OS = '<scr' + 'ipt';
+  const CS = '</' + 'script>';
+
+  const H = [];
+  H.push('<!doctype html>');
+  H.push('<html lang="es">');
+  H.push('<head>');
+  H.push('  <meta charset="utf-8" />');
+  H.push('  <meta name="viewport" content="width=device-width, initial-scale=1" />');
+  H.push('  <title>' + esc(metaT) + ' \xb7 MAYAM</title>');
+  H.push('  <meta name="description" content="' + esc(metaD) + '" />');
+  H.push('  <meta name="keywords" content="' + esc(kwStr) + '" />');
+  H.push('  <meta name="author" content="' + esc(author) + '" />');
+  H.push('  <meta name="language" content="es" />');
+  H.push('  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />');
+  H.push('  <meta name="theme-color" content="#005abf" />');
+  H.push('  <link rel="canonical" href="https://mayam.lat/blog/' + slug + '.html" />');
+  H.push('  <meta property="og:type" content="article" />');
+  H.push('  <meta property="og:url" content="https://mayam.lat/blog/' + slug + '.html" />');
+  H.push('  <meta property="og:site_name" content="MAYAM" />');
+  H.push('  <meta property="og:title" content="' + esc(metaT) + '" />');
+  H.push('  <meta property="og:description" content="' + esc(metaD) + '" />');
+  H.push('  <meta property="og:image" content="' + imgUrl + '" />');
+  H.push('  <meta property="og:image:width" content="1200" />');
+  H.push('  <meta property="og:image:height" content="630" />');
+  H.push('  <meta property="og:image:type" content="image/png" />');
+  H.push('  <meta property="og:image:alt" content="MAYAM \xb7 ' + esc(form.title) + '" />');
+  H.push('  <meta property="og:locale" content="es_MX" />');
+  H.push('  <meta property="article:published_time" content="' + dateIso + '" />');
+  H.push('  <meta property="article:author" content="' + esc(author) + '" />');
+  H.push('  <meta property="article:section" content="' + esc(category) + '" />');
+  H.push('  <meta name="twitter:card" content="summary_large_image" />');
+  H.push('  <meta name="twitter:site" content="@mayam_mx" />');
+  H.push('  <meta name="twitter:title" content="' + esc(metaT) + '" />');
+  H.push('  <meta name="twitter:description" content="' + esc(metaD) + '" />');
+  H.push('  <meta name="twitter:image" content="' + imgUrl + '" />');
+  H.push('  <meta name="geo.region" content="' + esc(geoR) + '" />');
+  H.push('  <meta name="geo.placename" content="' + esc(geoP) + '" />');
+  H.push('  <meta name="geo.position" content="' + esc(geoPosH) + '" />');
+  H.push('  <meta name="ICBM" content="' + esc(geoPos) + '" />');
+  H.push('  ' + OS + ' type="application/ld+json">');
+  H.push('  {');
+  H.push('    "@context": "https://schema.org",');
+  H.push('    "@graph": [');
+  H.push('      { "@type": "Article", "@id": "https://mayam.lat/blog/' + slug + '.html",');
+  H.push('        "headline": ' + JSON.stringify(form.title || '') + ',');
+  H.push('        "description": ' + JSON.stringify(metaD) + ',');
+  H.push('        "image": ' + JSON.stringify(imgUrl) + ',');
+  H.push('        "datePublished": ' + JSON.stringify(dateIso) + ',');
+  H.push('        "dateModified": ' + JSON.stringify(dateIso) + ',');
+  H.push('        "author": { "@type": "Person", "name": ' + JSON.stringify(author) + ' },');
+  H.push('        "publisher": { "@id": "https://mayam.lat/#organization" },');
+  H.push('        "mainEntityOfPage": { "@type": "WebPage", "@id": "https://mayam.lat/blog/' + slug + '.html" },');
+  H.push('        "inLanguage": "es-MX", "keywords": ' + JSON.stringify(kwStr) + ',');
+  H.push('        "articleSection": ' + JSON.stringify(category) + ', "timeRequired": "PT' + rt + 'M" },');
+  H.push('      { "@type": "Organization", "@id": "https://mayam.lat/#organization",');
+  H.push('        "name": "MAYAM", "url": "https://mayam.lat",');
+  H.push('        "logo": { "@type": "ImageObject", "url": "https://mayam.lat/assets/og-image.png" } },');
+  H.push('      { "@type": "BreadcrumbList", "itemListElement": [');
+  H.push('          { "@type": "ListItem", "position": 1, "name": "Inicio", "item": "https://mayam.lat/" },');
+  H.push('          { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://mayam.lat/blog.html" },');
+  H.push('          { "@type": "ListItem", "position": 3, "name": ' + JSON.stringify(form.title || '') + ', "item": "https://mayam.lat/blog/' + slug + '.html" }');
+  H.push('      ] }');
+  H.push('    ]');
+  H.push('  }');
+  H.push('  ' + CS);
+  H.push('  ' + OS + '>');
+  H.push('  window.MAYAM_POST = ' + postData + ';');
+  H.push('  ' + CS);
+  H.push('  <base href="../" />');
+  H.push('  <link rel="stylesheet" href="assets/base.css" />');
+  H.push('</' + 'head>');
+  H.push('<body>');
+  H.push('<div id="root"></div>');
+  H.push(OS + ' src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js">' + CS);
+  H.push(OS + ' src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous">' + CS);
+  H.push(OS + ' src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous">' + CS);
+  H.push(OS + ' src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous">' + CS);
+  H.push(OS + ' src="https://unpkg.com/lucide@latest">' + CS);
+  H.push(OS + ' type="text/babel" src="components/Shared.jsx">' + CS);
+  H.push(OS + ' type="text/babel" src="components/ShaderBg.jsx">' + CS);
+  H.push(OS + ' type="text/babel" src="components/BlogPost.jsx">' + CS);
+  H.push('</' + 'body>');
+  H.push('</' + 'html>');
+  return H.join('\n');
+}
+
 function useLucide(deps=[]) {
   useEffect(() => { if (window.lucide) window.lucide.createIcons(); }, deps);
 }
@@ -256,6 +369,7 @@ function PostListView({ posts, onEdit, onDelete, onTogglePublish, onToggleFeatur
   useLucide([posts.length]);
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('all');
+  const [generatingPost, setGeneratingPost] = useState(null);
 
   const visible = posts.filter(p => {
     const q = search.toLowerCase();
@@ -333,6 +447,9 @@ function PostListView({ posts, onEdit, onDelete, onTogglePublish, onToggleFeatur
               <button className="btn-icon danger" title="Eliminar" onClick={() => onDelete(p)}>
                 <Icon name="trash-2" size={14} />
               </button>
+              <button className="btn-icon" title="Generar página HTML" onClick={() => setGeneratingPost(p)}>
+                <Icon name="file-code" size={14} />
+              </button>
             </div>
             <button className="btn btn-secondary" style={{ fontSize: 12, padding: '6px 14px' }} onClick={() => onEdit(p)}>
               Editar
@@ -340,6 +457,13 @@ function PostListView({ posts, onEdit, onDelete, onTogglePublish, onToggleFeatur
           </div>
         ))}
       </div>
+      {generatingPost && (
+        <GenerateHTMLModal
+          form={{ ...generatingPost, tags_raw: (generatingPost.tags || []).join(', ') }}
+          keywords={generatingPost.meta_keywords || []}
+          onClose={() => setGeneratingPost(null)}
+        />
+      )}
     </div>
   );
 }
@@ -709,6 +833,60 @@ function EditorPreviewModal({ form, keywords, onClose }) {
   );
 }
 
+function GenerateHTMLModal({ form, keywords, onClose }) {
+  const [copied, setCopied] = useState(false);
+  const slug = form.slug || generateSlug(form.title);
+  const html = generatePostHTML(form, keywords);
+
+  useEffect(() => {
+    function onKey(e) { if (e.key === 'Escape') onClose(); }
+    document.addEventListener('keydown', onKey);
+    document.body.style.overflow = 'hidden';
+    return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = ''; };
+  }, []);
+
+  function download() {
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = slug + '.html';
+    a.click(); URL.revokeObjectURL(url);
+  }
+
+  function copy() {
+    navigator.clipboard.writeText(html).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }
+
+  return (
+    <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(10,18,36,0.65)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', display: 'grid', placeItems: 'center', padding: 24, animation: 'mayam-fade-in 180ms ease' }}>
+      <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 740, maxHeight: '85vh', background: '#fff', borderRadius: 20, overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 40px 90px rgba(0,0,0,0.38)', animation: 'mayam-pop-in 260ms cubic-bezier(0.2,0,0,1.05)' }}>
+        <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 12 }}>
+          <Icon name="file-code" size={18} style={{ color: 'var(--mayam-blue)' }} />
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--neutral-900)' }}>Generar HTML</div>
+            <div style={{ fontSize: 12, color: 'var(--fg-muted)' }}>{slug}.html</div>
+          </div>
+          <button onClick={copy} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: copied ? '#dcfce7' : 'var(--blue-050)', color: copied ? '#15803d' : 'var(--mayam-blue)', border: '1px solid', borderColor: copied ? '#86efac' : 'var(--blue-100)', borderRadius: 8, padding: '7px 14px', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>
+            <Icon name={copied ? 'check' : 'copy'} size={14} /> {copied ? 'Copiado' : 'Copiar'}
+          </button>
+          <button onClick={download} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'var(--mayam-blue)', color: '#fff', border: 'none', borderRadius: 8, padding: '7px 14px', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>
+            <Icon name="download" size={14} /> Descargar
+          </button>
+          <button onClick={onClose} className="btn-icon" style={{ marginLeft: 4 }}>
+            <Icon name="x" size={16} />
+          </button>
+        </div>
+        <div style={{ flex: 1, overflow: 'auto', padding: '16px 20px', background: '#0f172a' }}>
+          <pre style={{ margin: 0, fontSize: 11, lineHeight: 1.6, color: '#94a3b8', fontFamily: 'ui-monospace,SFMono-Regular,Menlo,monospace', whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>{html}</pre>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ═══════════════════════════════════════════════════
    POST EDITOR VIEW
 ═══════════════════════════════════════════════════ */
@@ -740,6 +918,7 @@ function PostEditorView({ post, user, onBack, onSaved }) {
   const [saveMsg, setSaveMsg] = useState('');
   const [keywords, setKeywords] = useState(post?.meta_keywords || []);
   const [showPreview, setShowPreview] = useState(false);
+  const [showGenerate, setShowGenerate] = useState(false);
 
   useLucide([form.status, form.featured]);
 
@@ -842,9 +1021,16 @@ function PostEditorView({ post, user, onBack, onSaved }) {
         >
           <Icon name="eye" size={14} /> Vista previa
         </button>
+        <button
+          onClick={() => setShowGenerate(true)}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#fff', border: '1px solid var(--border-strong)', borderRadius: 8, padding: '7px 14px', fontSize: 13, fontWeight: 600, color: 'var(--fg-strong)', cursor: 'pointer', fontFamily: 'var(--font-sans)' }}
+        >
+          <Icon name="file-code" size={14} /> Generar HTML
+        </button>
       </div>
 
       {showPreview && <EditorPreviewModal form={form} keywords={keywords} onClose={() => setShowPreview(false)} />}
+      {showGenerate && <GenerateHTMLModal form={form} keywords={keywords} onClose={() => setShowGenerate(false)} />}
 
       <div className="editor-layout">
         {/* Main */}

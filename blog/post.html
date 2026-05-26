@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Metas base — se actualizan por JS después de cargar el artículo -->
+  <title>Artículo · Blog MAYAM</title>
+  <meta name="description" content="Análisis y tendencias sobre inteligencia artificial y estrategia empresarial escritos por el equipo MAYAM." />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
+  <meta name="theme-color" content="#005abf" />
+  <meta name="language" content="es" />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="MAYAM" />
+  <meta property="og:locale" content="es_MX" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@mayam_mx" />
+
+  <meta name="geo.region" content="MX-CMX" />
+  <meta name="geo.placename" content="Ciudad de México, México" />
+  <meta name="geo.position" content="19.4326;-99.1332" />
+  <meta name="ICBM" content="19.4326, -99.1332" />
+
+  <base href="../" />
+  <link rel="stylesheet" href="assets/base.css" />
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<script type="text/babel" src="components/Shared.jsx"></script>
+<script type="text/babel" src="components/ShaderBg.jsx"></script>
+
+<script type="text/babel">
+const SUPABASE_URL  = 'https://wbujrdnolbdcleejnrft.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndidWpyZG5vbGJkY2xlZWpucmZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3MTUzNTUsImV4cCI6MjA5NTI5MTM1NX0.vkzxEe7tvbXwQOOYGYKEJbsXQ-HOAobxnB-PRxOpkCc';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+const { useEffect, useState } = React;
+
+/* Posts de respaldo en caso de que el post no esté en Supabase */
+const FALLBACK_MAP = {
+  'fallo-musk-openai-seguridad-juridica-hitos-financieros-ia': {
+    slug: 'fallo-musk-openai-seguridad-juridica-hitos-financieros-ia',
+    category: 'IA & Legal', categoryIcon: 'scale',
+    title: 'Implicaciones del fallo Musk vs. OpenAI: Seguridad jurídica e hitos financieros en la industria de la IA ⚖️📈',
+    author: 'Gibrán Torreblanca', date: '20 mayo 2026', readTime: '5 min de lectura',
+    image: 'https://media.licdn.com/dms/image/v2/D5622AQG2EHg9wcZtQw/feedshare-shrink_800/B56Z5LfuRSKUAc-/0/1779383068002?e=1781136000&v=beta&t=bK4jkZVeGs9EEt7-RnCBQ_iawbuElePhTWYQgavOn2c',
+    content: [
+      { type: 'lead', text: 'El reciente fallo unánime de un jurado federal en Oakland a favor de Sam Altman, Greg Brockman y OpenAI marca un hito regulatorio y comercial en el ecosistema tecnológico. Al desestimar la demanda de Elon Musk bajo el argumento del estatuto de limitaciones (prescripción), el tribunal no solo mitiga la incertidumbre legal que rodeaba a la compañía, sino que valida la viabilidad de los modelos híbridos (for-profit / non-profit) para sostener la innovación a gran escala.' },
+      { type: 'bullets', items: [
+        { icon: 'scale', label: 'Gobernanza y Estructura Corporativa', text: 'El fallo ratifica la estabilidad del esquema comercial de OpenAI y asegura la continuidad estratégica de sus alianzas clave, como el partnership con Microsoft.' },
+        { icon: 'trending-up', label: 'Certidumbre para los Inversores', text: 'La resolución elimina de manera temporal un riesgo sistémico mayor, pavimentando una trayectoria sólida hacia una potencial Oferta Pública Inicial (IPO) proyectada en una valoración histórica de $1 billón de dólares ($1tn).' },
+        { icon: 'clock', label: 'El factor temporal en litigios de tecnología', text: 'La defensa de OpenAI logró demostrar con éxito que el demandante poseía conocimiento de las reestructuraciones corporativas desde 2017, fijando un precedente relevante en la oportunidad procesal dentro del sector.' },
+        { icon: 'alert-circle', label: 'Perspectiva de apelación', text: 'Aunque la representación legal de Musk escalará el caso a la Corte de Apelaciones del Noveno Circuito, analistas corporativos sugieren que revertir un veredicto de hechos dictado por un jurado presenta una alta complejidad jurídica.' }
+      ]},
+      { type: 'question', text: '¿Considera que este fallo acelerará la consolidación de modelos puramente comerciales en el desarrollo de la IA de frontera, o se mantendrá la necesidad de contrapesos éticos y filantrópicos?' }
+    ],
+  },
+};
+
+function normalizeDbPost(p) {
+  return {
+    slug: p.slug || '',
+    category: p.category,
+    categoryIcon: p.category_icon || 'file-text',
+    title: p.title,
+    excerpt: p.excerpt || '',
+    author: p.author_name,
+    date: p.published_at
+      ? new Date(p.published_at).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' })
+      : '',
+    readTime: `${p.read_time_minutes || 3} min de lectura`,
+    image: p.image_url || '',
+    content: Array.isArray(p.content) ? p.content : [],
+  };
+}
+
+function AuthorAvatar({ name, size = 42 }) {
+  const initials = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  return (
+    <div style={{
+      width: size, height: size, borderRadius: '50%',
+      background: 'var(--blue-100)', color: 'var(--mayam-blue)',
+      display: 'grid', placeItems: 'center',
+      fontWeight: 600, fontSize: size * 0.38, flexShrink: 0,
+      border: '2px solid var(--blue-200)',
+    }}>{initials}</div>
+  );
+}
+
+function CategoryBadge({ label, icon }) {
+  useEffect(() => { if (window.lucide) window.lucide.createIcons(); });
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', gap: 6,
+      fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase',
+      color: 'var(--mayam-blue)', background: 'var(--blue-050)',
+      padding: '5px 12px', borderRadius: 999,
+    }}>
+      <i data-lucide={icon} style={{ width: 12, height: 12 }}></i>
+      {label}
+    </span>
+  );
+}
+
+function renderBlocks(content) {
+  if (!Array.isArray(content) || content.length === 0) return null;
+  return content.map((block, i) => {
+    if (block.type === 'lead') return (
+      <p key={i} style={{ fontSize: 18, lineHeight: 1.8, color: 'var(--fg)', margin: '0 0 28px 0', fontWeight: 400 }}>{block.text}</p>
+    );
+    if (block.type === 'paragraph') return (
+      <p key={i} style={{ fontSize: 16, lineHeight: 1.75, color: 'var(--fg)', margin: '0 0 22px 0' }}>{block.text}</p>
+    );
+    if (block.type === 'subheading') return (
+      <h2 key={i} style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.12em', color: 'var(--neutral-600)', margin: '36px 0 14px 0', textTransform: 'uppercase' }}>{block.text}</h2>
+    );
+    if (block.type === 'bullets') return (
+      <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 16, margin: '0 0 32px 0' }}>
+        {(block.items || []).map((item, j) => (
+          <div key={j} style={{ display: 'flex', gap: 16, alignItems: 'flex-start', padding: '18px 20px', borderRadius: 14, background: 'var(--neutral-050)', border: '1px solid var(--border)' }}>
+            <div style={{ width: 38, height: 38, borderRadius: 10, flexShrink: 0, background: 'var(--blue-050)', color: 'var(--mayam-blue)', display: 'grid', placeItems: 'center' }}>
+              <i data-lucide={item.icon} style={{ width: 18, height: 18 }}></i>
+            </div>
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--neutral-800)', marginBottom: 5 }}>{item.label}</div>
+              <div style={{ fontSize: 15, color: 'var(--fg-muted)', lineHeight: 1.65 }}>{item.text}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+    if (block.type === 'question') return (
+      <div key={i} style={{ borderLeft: '3px solid var(--mayam-blue)', paddingLeft: 24, margin: '32px 0', color: 'var(--fg-strong)', fontSize: 17, lineHeight: 1.7, fontStyle: 'italic' }}>
+        {block.text}
+      </div>
+    );
+    return null;
+  });
+}
+
+function ArticleView({ post }) {
+  useEffect(() => { if (window.lucide) window.lucide.createIcons(); });
+
+  /* Actualiza metas del documento con los datos reales del artículo */
+  useEffect(() => {
+    if (!post) return;
+    document.title = `${post.title} · MAYAM`;
+    const setMeta = (sel, val) => { const el = document.querySelector(sel); if (el) el.setAttribute('content', val); };
+    const setLink = (rel, val) => { let el = document.querySelector(`link[rel="${rel}"]`); if (!el) { el = document.createElement('link'); el.rel = rel; document.head.appendChild(el); } el.href = val; };
+    setMeta('meta[name="description"]', post.excerpt || post.title);
+    setMeta('meta[property="og:title"]', post.title);
+    setMeta('meta[property="og:description"]', post.excerpt || post.title);
+    setMeta('meta[property="og:url"]', `https://mayam.lat/blog/${post.slug}.html`);
+    if (post.image) setMeta('meta[property="og:image"]', post.image);
+    setMeta('meta[name="twitter:title"]', post.title);
+    setMeta('meta[name="twitter:description"]', post.excerpt || post.title);
+    if (post.image) setMeta('meta[name="twitter:image"]', post.image);
+    setLink('canonical', `https://mayam.lat/blog/${post.slug}.html`);
+  }, [post]);
+
+  return (
+    <>
+      <Header active="blog.html" />
+      <main>
+        <div style={{ position: 'relative', height: 'clamp(340px, 45vw, 560px)', overflow: 'hidden', background: 'var(--blue-900)' }}>
+          {post.image && (
+            <img src={post.image} alt={post.title} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} onError={e => { e.target.style.display = 'none'; }} />
+          )}
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,18,60,0.95) 0%, rgba(0,18,60,0.45) 50%, transparent 100%)' }} />
+          <div style={{ position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 1200, padding: '0 24px 44px' }}>
+            <nav aria-label="Breadcrumb" style={{ marginBottom: 18 }}>
+              <ol style={{ display: 'flex', gap: 8, alignItems: 'center', listStyle: 'none', padding: 0, margin: 0, flexWrap: 'wrap' }}>
+                <li><a href="index.html" style={{ color: 'rgba(255,255,255,0.65)', fontSize: 13, textDecoration: 'none' }}>Inicio</a></li>
+                <li style={{ color: 'rgba(255,255,255,0.35)', fontSize: 13 }}>›</li>
+                <li><a href="blog.html" style={{ color: 'rgba(255,255,255,0.65)', fontSize: 13, textDecoration: 'none' }}>Blog</a></li>
+                <li style={{ color: 'rgba(255,255,255,0.35)', fontSize: 13 }}>›</li>
+                <li style={{ color: 'rgba(255,255,255,0.85)', fontSize: 13, fontWeight: 500, maxWidth: 280, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{post.category}</li>
+              </ol>
+            </nav>
+            <div style={{ marginBottom: 16 }}><CategoryBadge label={post.category} icon={post.categoryIcon} /></div>
+            <h1 style={{ fontSize: 'clamp(22px, 3.2vw, 42px)', fontWeight: 600, lineHeight: 1.15, letterSpacing: '-0.02em', color: '#fff', margin: '0 0 22px 0', maxWidth: 860 }}>{post.title}</h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+              <AuthorAvatar name={post.author} size={42} />
+              <div>
+                <div style={{ fontSize: 15, fontWeight: 600, color: '#fff' }}>{post.author}</div>
+                <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', marginTop: 2 }}>{post.date} · {post.readTime}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style={{ maxWidth: 820, margin: '0 auto', padding: '56px 24px 80px' }}>
+          {renderBlocks(post.content)}
+          <div style={{ marginTop: 64, padding: '40px 44px', borderRadius: 22, background: 'var(--mayam-blue)', color: '#fff' }}>
+            <h3 style={{ fontSize: 22, fontWeight: 600, margin: '0 0 10px 0', color: '#fff' }}>¿Quieres implementar IA en tu empresa?</h3>
+            <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.82)', margin: '0 0 24px 0', lineHeight: 1.65 }}>
+              En MAYAM acompañamos a empresas en México y Latinoamérica a adoptar inteligencia artificial de forma estratégica y responsable.
+            </p>
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+              <a href="contacto.html" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#fff', color: 'var(--mayam-blue)', borderRadius: 10, padding: '12px 22px', fontWeight: 600, fontSize: 14, textDecoration: 'none' }}>
+                Contactar a MAYAM <i data-lucide="arrow-right" style={{ width: 15, height: 15 }}></i>
+              </a>
+              <a href="blog.html" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(255,255,255,0.12)', color: '#fff', border: '1px solid rgba(255,255,255,0.28)', borderRadius: 10, padding: '12px 22px', fontWeight: 600, fontSize: 14, textDecoration: 'none' }}>
+                <i data-lucide="arrow-left" style={{ width: 15, height: 15 }}></i> Más artículos
+              </a>
+            </div>
+          </div>
+        </div>
+      </main>
+      <Footer />
+      <WhatsAppFloat />
+    </>
+  );
+}
+
+function App() {
+  const [post, setPost] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    /* Lee el slug desde ?slug= o desde el nombre del archivo */
+    const params = new URLSearchParams(window.location.search);
+    const slug = params.get('slug') || window.location.pathname.split('/').pop().replace('.html', '');
+
+    if (!slug || slug === 'post') {
+      setError(true);
+      setLoading(false);
+      return;
+    }
+
+    /* 1. Intenta obtenerlo de Supabase */
+    sb.from('blog_posts')
+      .select('*')
+      .eq('slug', slug)
+      .eq('status', 'published')
+      .single()
+      .then(({ data, error: err }) => {
+        if (data && !err) {
+          setPost(normalizeDbPost(data));
+        } else if (FALLBACK_MAP[slug]) {
+          setPost(FALLBACK_MAP[slug]);
+        } else {
+          setError(true);
+        }
+        setLoading(false);
+      })
+      .catch(() => {
+        if (FALLBACK_MAP[slug]) setPost(FALLBACK_MAP[slug]);
+        else setError(true);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) return (
+    <>
+      <Header active="blog.html" />
+      <div style={{ minHeight: '60vh', display: 'grid', placeItems: 'center' }}>
+        <div style={{ textAlign: 'center', color: 'var(--fg-muted)' }}>
+          <div style={{ fontSize: 32, marginBottom: 12 }}>⏳</div>
+          <p style={{ fontSize: 15 }}>Cargando artículo…</p>
+        </div>
+      </div>
+      <Footer />
+    </>
+  );
+
+  if (error || !post) return (
+    <>
+      <Header active="blog.html" />
+      <div style={{ minHeight: '60vh', display: 'grid', placeItems: 'center' }}>
+        <div style={{ textAlign: 'center', color: 'var(--fg-muted)', maxWidth: 480, padding: '0 24px' }}>
+          <div style={{ fontSize: 48, marginBottom: 16 }}>🔍</div>
+          <h2 style={{ fontSize: 22, fontWeight: 600, color: 'var(--neutral-800)', marginBottom: 10 }}>Artículo no encontrado</h2>
+          <p style={{ fontSize: 15, lineHeight: 1.6, marginBottom: 28 }}>Este artículo no está disponible o su página aún no ha sido publicada.</p>
+          <a href="blog.html" className="btn btn-primary">Ver todos los artículos</a>
+        </div>
+      </div>
+      <Footer />
+      <WhatsAppFloat />
+    </>
+  );
+
+  return <ArticleView post={post} />;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
