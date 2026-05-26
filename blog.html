@@ -421,7 +421,7 @@ function BlogModal({ post, onClose }) {
           to   { opacity: 1; transform: translateY(0) scale(1); }
         }
         @media (max-width: 900px) {
-          .blog-modal-inner { flex-direction: column !important; max-height: 92vh; overflow-y: auto; }
+          .blog-modal-inner { flex-direction: column !important; max-height: 92vh; overflow-y: auto !important; overflow-x: hidden !important; -webkit-overflow-scrolling: touch; }
           .blog-modal-inner > div:first-child { flex: 0 0 auto !important; min-height: 280px !important; }
           .blog-modal-inner > div:last-child { flex: 0 0 auto !important; overflow-y: visible !important; }
         }

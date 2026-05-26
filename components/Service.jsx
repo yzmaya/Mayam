@@ -249,7 +249,7 @@ function ProjectModal({ project, onClose }) {
           to   { opacity: 1; transform: translateY(0)    scale(1);    }
         }
         @media (max-width: 880px) {
-          .project-modal { flex-direction: column !important; max-height: 92vh; overflow-y: auto; }
+          .project-modal { flex-direction: column !important; max-height: 92vh; overflow-y: auto !important; overflow-x: hidden !important; -webkit-overflow-scrolling: touch; }
           .project-modal > div:first-child { flex: 0 0 auto !important; min-height: 240px !important; padding: 32px !important; }
           .project-modal > div:last-child { flex: 0 0 auto !important; padding: 32px !important; overflow-y: visible !important; }
         }
