@@ -178,7 +178,7 @@ function ProjectModal({ project, onClose }) {
         </div>
 
         {/* Right: detail */}
-        <div style={{ padding: '48px 48px 40px', display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
+        <div style={{ padding: '48px 48px 40px', display: 'flex', flexDirection: 'column', overflowY: 'auto', minHeight: 0 }}>
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
             <button onClick={onClose} aria-label="Cerrar" style={{
               width: 40, height: 40, borderRadius: '50%', border: '1px solid var(--border)',
