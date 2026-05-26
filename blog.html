@@ -267,14 +267,14 @@ function BlogModal({ post, onClose }) {
         style={{
           width: '100%', maxWidth: 1100, maxHeight: '92vh',
           background: '#fff', borderRadius: 22, overflow: 'hidden',
-          display: 'grid', gridTemplateColumns: '420px 1fr',
+          display: 'flex', flexDirection: 'row',
           boxShadow: '0 40px 90px rgba(0,0,0,0.38)',
           animation: 'mayam-pop-in 280ms cubic-bezier(0.2,0,0,1.05)',
         }}
         className="blog-modal-inner"
       >
         {/* Left: imagen */}
-        <div style={{ position: 'relative', overflow: 'hidden', minHeight: 480 }}>
+        <div style={{ position: 'relative', overflow: 'hidden', flex: '0 0 420px', minHeight: 0 }}>
           <img
             src={post.image}
             alt={post.title}
@@ -302,7 +302,7 @@ function BlogModal({ post, onClose }) {
         </div>
 
         {/* Right: contenido */}
-        <div style={{ display: 'flex', flexDirection: 'column', overflowY: 'auto', minHeight: 0 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', overflowY: 'auto', minWidth: 0, flex: 1 }}>
           {/* Header barra */}
           <div style={{
             display: 'flex', justifyContent: 'space-between', alignItems: 'center',
@@ -419,8 +419,9 @@ function BlogModal({ post, onClose }) {
           to   { opacity: 1; transform: translateY(0) scale(1); }
         }
         @media (max-width: 900px) {
-          .blog-modal-inner { grid-template-columns: 1fr !important; max-height: 92vh; overflow-y: auto; }
-          .blog-modal-inner > div:first-child { min-height: 280px !important; }
+          .blog-modal-inner { flex-direction: column !important; max-height: 92vh; overflow-y: auto; }
+          .blog-modal-inner > div:first-child { flex: 0 0 auto !important; min-height: 280px !important; }
+          .blog-modal-inner > div:last-child { overflow-y: visible !important; }
         }
       `}</style>
     </div>

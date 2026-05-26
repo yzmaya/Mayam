@@ -116,7 +116,7 @@ function ProjectModal({ project, onClose }) {
         style={{
           width: '100%', maxWidth: 1080, maxHeight: '90vh',
           background: '#fff', borderRadius: 20, overflow: 'hidden',
-          display: 'grid', gridTemplateColumns: 'minmax(0, 1.1fr) minmax(0, 1fr)',
+          display: 'flex', flexDirection: 'row',
           boxShadow: '0 40px 80px rgba(0,0,0,0.35)',
           animation: 'mayam-pop-in 280ms cubic-bezier(0.2,0,0,1.05)',
         }}
@@ -127,7 +127,7 @@ function ProjectModal({ project, onClose }) {
           background: `linear-gradient(135deg, ${c1} 0%, ${c2} 100%)`,
           color: '#fff', padding: 48, position: 'relative',
           display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
-          minHeight: 480,
+          flex: '0 0 52%', minHeight: 0,
         }}>
           {igUrl ? (
             <>
@@ -178,7 +178,7 @@ function ProjectModal({ project, onClose }) {
         </div>
 
         {/* Right: detail */}
-        <div style={{ padding: '48px 48px 40px', display: 'flex', flexDirection: 'column', overflowY: 'auto', minHeight: 0 }}>
+        <div style={{ padding: '48px 48px 40px', display: 'flex', flexDirection: 'column', overflowY: 'auto', minWidth: 0, flex: 1 }}>
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
             <button onClick={onClose} aria-label="Cerrar" style={{
               width: 40, height: 40, borderRadius: '50%', border: '1px solid var(--border)',
@@ -249,9 +249,9 @@ function ProjectModal({ project, onClose }) {
           to   { opacity: 1; transform: translateY(0)    scale(1);    }
         }
         @media (max-width: 880px) {
-          .project-modal { grid-template-columns: 1fr !important; max-height: 92vh; overflow-y: auto; }
-          .project-modal > div:first-child { min-height: 240px !important; padding: 32px !important; }
-          .project-modal > div:last-child { padding: 32px !important; }
+          .project-modal { flex-direction: column !important; max-height: 92vh; overflow-y: auto; }
+          .project-modal > div:first-child { flex: 0 0 auto !important; min-height: 240px !important; padding: 32px !important; }
+          .project-modal > div:last-child { padding: 32px !important; overflow-y: visible !important; }
         }
       `}</style>
     </div>
