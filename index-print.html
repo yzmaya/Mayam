@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MAYAM — Sitio web (versión imprimible)</title>
+  <meta name="description" content="Versión imprimible del sitio MAYAM (home + 4 servicios + nosotros + contacto)." />
+  <link rel="stylesheet" href="assets/base.css" />
+  <style>
+    /* Force colors and disable hover/animations for print */
+    * {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    html, body { margin: 0; padding: 0; background: #fff; }
+
+    /* Hide chrome that doesn't make sense in print */
+    .mayam-header,
+    .mayam-whatsapp-float,
+    .mayam-footer-back-to-top { display: none !important; }
+
+    /* Each captured page */
+    .print-page {
+      break-before: page;
+      page-break-before: always;
+      break-inside: avoid-page;
+    }
+    .print-page:first-of-type {
+      break-before: auto;
+      page-break-before: auto;
+    }
+
+    /* Cover */
+    .print-cover {
+      min-height: 100vh;
+      background: var(--mayam-blue);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 80px 72px;
+      position: relative;
+      overflow: hidden;
+      page-break-after: always;
+      break-after: page;
+    }
+    .print-cover::after {
+      content: 'Y';
+      position: absolute;
+      right: -6rem; bottom: -10rem;
+      font-family: var(--font-display);
+      font-size: 50rem;
+      font-weight: 700;
+      color: #fff;
+      opacity: 0.06;
+      line-height: 1;
+    }
+    .print-cover-eyebrow {
+      font-size: 14px;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      font-weight: 600;
+      opacity: 0.85;
+    }
+    .print-cover h1 {
+      font-family: var(--font-display);
+      font-size: 96px;
+      font-weight: 600;
+      letter-spacing: -0.025em;
+      line-height: 1;
+      margin: 24px 0 0 0;
+      color: #fff;
+      max-width: 900px;
+    }
+    .print-cover h1 em {
+      font-style: italic; font-weight: 400; opacity: 0.92;
+    }
+    .print-cover-meta {
+      display: flex; justify-content: space-between; align-items: flex-end;
+      gap: 40px; flex-wrap: wrap;
+      position: relative;
+      font-size: 14px;
+      color: rgba(255,255,255,0.85);
+    }
+    .print-cover-meta strong { color: #fff; display: block; font-size: 22px; font-weight: 600; margin-bottom: 6px; letter-spacing: -0.005em; }
+    .print-cover-tagline {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 26px;
+      font-weight: 400;
+      opacity: 0.9;
+    }
+
+    /* TOC */
+    .print-toc {
+      padding: 80px 72px;
+      page-break-after: always;
+      break-after: page;
+    }
+    .print-toc h2 {
+      font-family: var(--font-display);
+      font-size: 56px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin: 0 0 8px 0;
+    }
+    .print-toc-sub { color: var(--fg-muted); font-size: 16px; margin-bottom: 56px; max-width: 600px; }
+    .print-toc ol { list-style: none; padding: 0; margin: 0; counter-reset: toc; }
+    .print-toc li {
+      counter-increment: toc;
+      display: grid;
+      grid-template-columns: 80px 1fr 80px;
+      align-items: baseline;
+      padding: 18px 0;
+      border-top: 1px solid var(--border);
+      font-size: 22px;
+      font-weight: 500;
+    }
+    .print-toc li:last-child { border-bottom: 1px solid var(--border); }
+    .print-toc li::before {
+      content: counter(toc, decimal-leading-zero);
+      font-family: var(--font-mono);
+      font-size: 14px;
+      letter-spacing: 0.1em;
+      color: var(--mayam-blue);
+      font-weight: 600;
+    }
+    .print-toc li .toc-page {
+      text-align: right;
+      font-family: var(--font-mono);
+      font-size: 14px;
+      color: var(--fg-muted);
+    }
+    .print-toc li .toc-sub {
+      display: block;
+      font-size: 13px;
+      color: var(--fg-muted);
+      font-weight: 400;
+      margin-top: 4px;
+    }
+
+    /* Page header for each rendered page */
+    .print-pageheader {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 24px 72px 16px;
+      border-bottom: 1px solid var(--border);
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--fg-muted);
+      font-weight: 600;
+    }
+    .print-pageheader-brand { color: var(--mayam-blue); }
+
+    .print-pagebody {
+      padding: 0;
+    }
+
+    /* Container override for print */
+    @media print {
+      @page { size: Letter; margin: 0.5in; }
+      .print-page { padding: 0 !important; }
+      /* Avoid breaking inside cards */
+      article, .section-header, h1, h2, h3 { break-inside: avoid; }
+      /* Avoid the floating WA */
+      .mayam-whatsapp-float, [aria-label="Hablar por WhatsApp"] { display: none !important; }
+    }
+    @media screen {
+      body {
+        background: #ececec;
+      }
+      .print-page, .print-cover, .print-toc {
+        max-width: 8.5in;
+        margin: 24px auto;
+        background: #fff;
+        box-shadow: 0 6px 30px rgba(0,0,0,0.08);
+      }
+    }
+
+    /* Section spacing tight in print */
+    .section { padding: 56px 0 !important; }
+    .container { padding-left: 48px; padding-right: 48px; }
+  </style>
+</head>
+<body>
+
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<script type="text/babel" src="components/Shared.jsx"></script>
+<script type="text/babel" src="components/Home.jsx"></script>
+<script type="text/babel" src="components/Service.jsx"></script>
+
+<script type="text/babel">
+const { useEffect, useState } = React;
+
+const PAGES = [
+  { id: 'home',     label: 'Inicio',     sub: 'Home con propuesta de valor + servicios', file: 'index.html' },
+  { id: 'wa',       label: 'Servicio · Agentes WhatsApp',  sub: 'Agentes conversacionales multimodales',     file: 'agentes-whatsapp.html' },
+  { id: 'cap',      label: 'Servicio · Capacitación',      sub: 'Programas in-company de adopción de IA',     file: 'capacitacion.html' },
+  { id: 'video',    label: 'Servicio · Maquila de video',  sub: 'Producción de video con IA generativa',      file: 'maquila-video.html' },
+  { id: 'cons',     label: 'Servicio · Consultoría',       sub: 'Estrategia y gobernanza de IA',              file: 'consultoria.html' },
+  { id: 'about',    label: 'Nosotros',  sub: 'Manifiesto y principios',                                      file: 'nosotros.html' },
+  { id: 'contact',  label: 'Contacto',  sub: 'Datos y formulario',                                           file: 'contacto.html' },
+];
+
+function PrintCover() {
+  return (
+    <section className="print-cover">
+      <div>
+        <div className="print-cover-eyebrow">Sitio web · Documento interno</div>
+      </div>
+      <div style={{ position: 'relative' }}>
+        <h1>Sitio MAYAM<br/><em>Documento de revisión.</em></h1>
+      </div>
+      <div className="print-cover-meta">
+        <div>
+          <strong>MAYAM</strong>
+          mayam.mx · hola@mayam.mx<br/>
+          Villa Cacama 18, GAM, CDMX
+        </div>
+        <div className="print-cover-tagline">"Todo es posible"</div>
+      </div>
+    </section>
+  );
+}
+
+function PrintTOC() {
+  return (
+    <section className="print-toc">
+      <h2>Índice</h2>
+      <p className="print-toc-sub">
+        Versión imprimible del sitio. Cada sección es una página del sitio web entregable. Los proyectos placeholder se irán reemplazando con casos reales conforme tengamos autorización de cada cliente.
+      </p>
+      <ol>
+        {PAGES.map((p, i) => (
+          <li key={p.id}>
+            <span></span>
+            <span>{p.label}<span className="toc-sub">{p.sub} · <code>{p.file}</code></span></span>
+            <span className="toc-page">pág. {i + 3}</span>
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
+
+function PrintPageWrap({ page, children }) {
+  return (
+    <section className="print-page">
+      <div className="print-pageheader">
+        <span className="print-pageheader-brand">MAYAM · Sitio web</span>
+        <span>{page.label}</span>
+      </div>
+      <div className="print-pagebody">
+        {children}
+      </div>
+    </section>
+  );
+}
+
+// ---- Page renderers (mirror the real pages but stripped of header/footer/whatsapp) ----
+
+function HomeRender() {
+  return (
+    <>
+      <HeroSplit />
+      <LogoStrip />
+      <ProblemSection />
+      <ServicesSection />
+      <ImpactSection />
+      <ProcessSection />
+      <CTASection />
+    </>
+  );
+}
+
+function ServiceWAReader() {
+  const [layout] = useState('grid');
+  return (
+    <>
+      <ServiceHero
+        eyebrow="Agentes WhatsApp" icon="message-circle"
+        title="Agentes que conversan," titleAccent="entienden y resuelven."
+        description="Diseñamos, integramos y operamos agentes conversacionales para WhatsApp Business. Multimodales, conectados a tus sistemas y con guardrails para producción."
+        bullets={[
+          'WhatsApp Business API oficial (BSP certificado)',
+          'Voz, texto, imagen y documentos en una conversación',
+          'Integración con CRM, ERP, agenda y motor de pagos',
+          'Calificación de leads + handover a humano sin fricción',
+          'Métricas de conversación, latencia y NPS desde día uno',
+        ]}
+      />
+      <ServiceFeatures
+        title="Cómo construimos cada agente"
+        subtitle="Más allá de un bot de respuestas. Un trabajador digital que ejecuta tareas dentro de tu operación."
+        features={[
+          { icon: 'workflow', title: 'Diseño conversacional', desc: 'Flujos por intención + escalamiento, no árboles rígidos.' },
+          { icon: 'database', title: 'Datos y memoria', desc: 'RAG sobre tu base de conocimiento. El agente recuerda al cliente.' },
+          { icon: 'shield-check', title: 'Guardrails y ética', desc: 'Filtros, redacción de PII y políticas auditables.' },
+          { icon: 'plug', title: 'Integraciones reales', desc: 'HubSpot, Zoho, Salesforce, Google Calendar, Stripe, Conekta.' },
+          { icon: 'mic', title: 'Multimodal nativo', desc: 'Voz a texto, lectura de fotos de documentos y audio.' },
+          { icon: 'activity', title: 'Operación y mejora', desc: 'Monitoreo continuo y ciclos de mejora cada 2 semanas.' },
+        ]}
+      />
+      <ProjectsSection projects={makeProjects('agentes-whatsapp', 6)} layout={layout} setLayout={() => {}} />
+    </>
+  );
+}
+
+function ServiceCapRender() {
+  const [layout] = useState('grid');
+  return (
+    <>
+      <ServiceHero
+        eyebrow="Capacitación" icon="graduation-cap"
+        title="Programas para que tu equipo" titleAccent="adopte IA en su día a día."
+        description="Conferencias, talleres y AI Coaches implant. Formamos a tu plantilla en herramientas como ChatGPT Enterprise, Microsoft 365 Copilot y Claude for Work."
+        bullets={[
+          'Diagnóstico de madurez digital y de IA',
+          'Talleres por rol: comercial, marketing, finanzas, RH, ops',
+          'AI Coaches in-company durante 60–90 días',
+          'Casos de uso medibles diseñados con tu equipo',
+          'Métricas de adopción, ahorro y satisfacción',
+        ]}
+      />
+      <ServiceFeatures
+        title="Lo que incluye un programa típico"
+        features={[
+          { icon: 'compass', title: 'Diagnóstico', desc: '2 semanas para mapear procesos y madurez de IA por área.' },
+          { icon: 'book-open', title: 'Currícula a medida', desc: 'Adaptamos a tu industria, no un curso genérico.' },
+          { icon: 'users', title: 'Talleres in-company', desc: 'Sesiones presenciales y remotas con casos de uso reales.' },
+          { icon: 'user-cog', title: 'AI Coaches', desc: 'Acompañamiento 1-a-1 a roles clave durante 90 días.' },
+          { icon: 'target', title: 'Casos de uso', desc: 'Cada participante implementa al menos 3 casos reales.' },
+          { icon: 'bar-chart-3', title: 'Medición', desc: 'Adopción, horas ahorradas y NPS post-programa.' },
+        ]}
+      />
+      <ProjectsSection projects={makeProjects('capacitacion', 6)} layout={layout} setLayout={() => {}} />
+    </>
+  );
+}
+
+function ServiceVideoRender() {
+  const [layout] = useState('grid');
+  return (
+    <>
+      <ServiceHero
+        eyebrow="Maquila de video con IA" icon="film"
+        title="Video corporativo a escala," titleAccent="con flujo de IA."
+        description="Producción de video con guion, voces, avatares y animación generados con IA. Mantenemos la estética humana donde toca; la IA acelera lo repetitivo."
+        bullets={[
+          'Guion, voz y avatar consistentes con tu marca',
+          'Subtítulos y doblajes en 30+ idiomas',
+          'Pipeline de revisión con humano siempre en el loop',
+          'Plantillas reutilizables: onboarding, capacitación, ventas',
+          'Entregas en 5–10 días vs. 6–8 semanas tradicional',
+        ]}
+      />
+      <ServiceFeatures
+        title="Casos en los que la maquila tiene sentido"
+        features={[
+          { icon: 'graduation-cap', title: 'Capacitación', desc: 'Cursos internos con voces y avatares consistentes.' },
+          { icon: 'megaphone', title: 'Comunicación interna', desc: 'Mensajes de líderes en varios idiomas y tonos.' },
+          { icon: 'shopping-bag', title: 'Producto y ventas', desc: 'Demos cortas con voz humana sintética y subtítulos.' },
+          { icon: 'help-circle', title: 'Soporte', desc: 'Tutoriales paso a paso a partir de tickets recurrentes.' },
+          { icon: 'newspaper', title: 'Newsroom interno', desc: 'Boletines mensuales con avatares y B-roll generado.' },
+          { icon: 'languages', title: 'Localización', desc: 'Doblaje y subtítulos a 30+ idiomas, mismo personaje.' },
+        ]}
+      />
+      <ProjectsSection projects={makeProjects('maquila-video', 6)} layout={layout} setLayout={() => {}} />
+    </>
+  );
+}
+
+function ServiceConsRender() {
+  const [layout] = useState('grid');
+  return (
+    <>
+      <ServiceHero
+        eyebrow="Consultoría estratégica" icon="lightbulb"
+        title="Estrategia, gobernanza" titleAccent="y portafolio de IA."
+        description="Acompañamos a equipos directivos a tomar decisiones de IA con criterio: qué hacer, qué no, qué tercerizar y cómo gobernarlo bajo marcos como ISO/IEC 42001."
+        bullets={[
+          'Roadmap de IA priorizado por valor y riesgo',
+          'Gobernanza, comités y políticas internas',
+          'Marco de gestión bajo ISO/IEC 42001',
+          'Selección y due diligence de vendors',
+          'Modelo operativo y squads internos',
+        ]}
+      />
+      <ServiceFeatures
+        title="Engagements típicos"
+        features={[
+          { icon: 'map', title: 'Roadmap de IA', desc: '8–10 semanas para priorizar y costear iniciativas.' },
+          { icon: 'shield-check', title: 'Gobernanza', desc: 'Políticas, comités y trazabilidad de decisiones.' },
+          { icon: 'file-check', title: 'ISO 42001', desc: 'Implementación práctica del marco de gestión de IA.' },
+          { icon: 'briefcase', title: 'Vendor selection', desc: 'RFPs, due diligence y negociación con proveedores.' },
+          { icon: 'users', title: 'Modelo operativo', desc: 'Squads, capabilities y rol del CIO/CTO en el portafolio.' },
+          { icon: 'gauge', title: 'KPIs y reporting', desc: 'Indicadores ejecutivos y reporte trimestral al consejo.' },
+        ]}
+      />
+      <ProjectsSection projects={makeProjects('consultoria', 6)} layout={layout} setLayout={() => {}} />
+    </>
+  );
+}
+
+function AboutRender() {
+  return (
+    <>
+      <section style={{ background: 'var(--mayam-blue)', color: '#fff', padding: '60px 0' }}>
+        <div className="container">
+          <span className="eyebrow" style={{ color: 'rgba(255,255,255,0.85)' }}>Sobre MAYAM</span>
+          <h1 style={{ fontSize: 56, color: '#fff', letterSpacing: '-0.02em', margin: '12px 0 16px 0' }}>
+            Todo es posible cuando la IA trabaja con la gente.
+          </h1>
+          <p style={{ fontSize: 18, color: 'rgba(255,255,255,0.85)', margin: 0, maxWidth: 720, lineHeight: 1.5 }}>
+            Firma mexicana de implementación de IA. Diez años haciendo software empresarial. Cuatro adoptando inteligencia artificial dentro de las empresas con las que trabajamos.
+          </p>
+        </div>
+      </section>
+      <section className="section">
+        <div className="container">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
+            {[
+              { n: '10', s: 'años', l: 'de software empresarial' },
+              { n: '4', s: 'años', l: 'implementando IA generativa' },
+              { n: '—', s: '', l: 'clientes activos en MX (placeholder)' },
+              { n: 'ISO', s: '42001', l: 'marco aplicado' },
+            ].map((st, i) => (
+              <div key={i} style={{ borderTop: '2px solid var(--mayam-blue)', paddingTop: 16 }}>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: 44, fontWeight: 600, lineHeight: 1, letterSpacing: '-0.02em' }}>
+                  {st.n}{st.s && <span style={{ fontSize: 18, marginLeft: 6, color: 'var(--mayam-blue)' }}>{st.s}</span>}
+                </div>
+                <div style={{ marginTop: 8, fontSize: 13, color: 'var(--fg-muted)' }}>{st.l}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+      <section className="section section-subtle">
+        <div className="container">
+          <span className="eyebrow">Manifiesto</span>
+          <h2 style={{ fontSize: 36, letterSpacing: '-0.02em', margin: '8px 0 24px 0' }}>
+            La IA debería sumarle a la gente, no reemplazarla.
+          </h2>
+          <p style={{ fontSize: 16, lineHeight: 1.6, margin: '0 0 16px 0' }}>
+            Empezamos como casa de software hace una década. En 2022 vimos que la IA generativa cambiaba la forma de construir productos. No nos volvimos una agencia de IA: nos volvimos una firma que implementa IA dentro de empresas reales, con sus procesos, su gente y sus restricciones.
+          </p>
+          <p style={{ fontSize: 16, lineHeight: 1.6, margin: 0 }}>
+            Trabajamos bajo marcos como ISO/IEC 42001 porque la responsabilidad técnica importa. La Y de nuestro símbolo representa la unión entre la inteligencia humana y la artificial.
+          </p>
+        </div>
+      </section>
+    </>
+  );
+}
+
+function ContactRender() {
+  return (
+    <>
+      <section style={{ background: 'var(--mayam-blue)', color: '#fff', padding: '60px 0' }}>
+        <div className="container">
+          <span className="eyebrow" style={{ color: 'rgba(255,255,255,0.85)' }}>Contacto</span>
+          <h1 style={{ fontSize: 56, color: '#fff', letterSpacing: '-0.02em', margin: '12px 0 16px 0' }}>
+            Hablemos de cómo la IA puede trabajar para ti.
+          </h1>
+          <p style={{ fontSize: 18, color: 'rgba(255,255,255,0.85)', margin: 0, maxWidth: 680, lineHeight: 1.5 }}>
+            Diagnóstico inicial sin compromiso. Te leemos, hacemos preguntas y, si tiene sentido, te mandamos una propuesta concreta.
+          </p>
+        </div>
+      </section>
+      <section className="section">
+        <div className="container">
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48 }}>
+            <div>
+              <h2 style={{ fontSize: 24, margin: '0 0 24px 0' }}>Datos directos</h2>
+              {[
+                { l: 'WhatsApp', v: 'wa.me/525500000000', s: 'Respuesta en horario laboral' },
+                { l: 'Email', v: 'hola@mayam.mx', s: 'Para propuestas y RFP' },
+                { l: 'Oficina', v: 'Villa Cacama 18', s: 'Villa de Aragón, GAM, 07570 CDMX' },
+                { l: 'Horario', v: 'Lun–Vie · 9:00 a 19:00', s: 'Hora del centro de México' },
+              ].map((it, i) => (
+                <div key={i} style={{ padding: '14px 0', borderBottom: '1px solid var(--border)' }}>
+                  <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--fg-muted)', marginBottom: 4 }}>{it.l}</div>
+                  <div style={{ fontSize: 18, fontWeight: 600 }}>{it.v}</div>
+                  <div style={{ fontSize: 13, color: 'var(--fg-muted)', marginTop: 4 }}>{it.s}</div>
+                </div>
+              ))}
+            </div>
+            <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 16, padding: 32 }}>
+              <h2 style={{ fontSize: 24, margin: '0 0 8px 0' }}>Formulario en sitio</h2>
+              <p style={{ color: 'var(--fg-muted)', marginTop: 0, marginBottom: 20 }}>Captura: nombre, empresa, tamaño del equipo, servicio de interés y mensaje. Respuesta en menos de 24h hábiles.</p>
+              {['Nombre', 'Email corporativo', 'Empresa', 'Tamaño de equipo', '¿En qué te podemos ayudar?', 'Cuéntanos un poco'].map((label, i) => (
+                <div key={i} style={{ marginBottom: 12 }}>
+                  <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--fg-muted)', marginBottom: 6 }}>{label}</div>
+                  <div style={{ height: 36, background: 'var(--neutral-050)', border: '1px solid var(--border)', borderRadius: 8 }}></div>
+                </div>
+              ))}
+              <div style={{ marginTop: 20, padding: '12px 18px', background: 'var(--mayam-blue)', color: '#fff', borderRadius: 999, display: 'inline-block', fontWeight: 600 }}>Enviar mensaje</div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}
+
+function App() {
+  useEffect(() => {
+    if (window.lucide) window.lucide.createIcons();
+  });
+  return (
+    <>
+      <PrintCover />
+      <PrintTOC />
+      <PrintPageWrap page={PAGES[0]}><HomeRender /></PrintPageWrap>
+      <PrintPageWrap page={PAGES[1]}><ServiceWAReader /></PrintPageWrap>
+      <PrintPageWrap page={PAGES[2]}><ServiceCapRender /></PrintPageWrap>
+      <PrintPageWrap page={PAGES[3]}><ServiceVideoRender /></PrintPageWrap>
+      <PrintPageWrap page={PAGES[4]}><ServiceConsRender /></PrintPageWrap>
+      <PrintPageWrap page={PAGES[5]}><AboutRender /></PrintPageWrap>
+      <PrintPageWrap page={PAGES[6]}><ContactRender /></PrintPageWrap>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+
+// Auto-print after fonts and rendering are ready
+(async () => {
+  try { if (document.fonts && document.fonts.ready) await document.fonts.ready; } catch {}
+  setTimeout(() => {
+    if (window.lucide) window.lucide.createIcons();
+    setTimeout(() => window.print(), 600);
+  }, 1200);
+})();
+</script>
+</body>
+</html>

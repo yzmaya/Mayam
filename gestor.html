@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Crear cuenta · MAYAM</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="stylesheet" href="assets/base.css" />
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script type="text/babel" src="components/Shared.jsx"></script>
+
+<script type="text/babel">
+const SUPABASE_URL  = 'https://wbujrdnolbdcleejnrft.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndidWpyZG5vbGJkY2xlZWpucmZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3MTUzNTUsImV4cCI6MjA5NTI5MTM1NX0.vkzxEe7tvbXwQOOYGYKEJbsXQ-HOAobxnB-PRxOpkCc';
+const COMPANY_CODE  = 'Ym89$a!us';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+const { useState, useEffect } = React;
+
+function Field({ label, type, value, onChange, placeholder, icon, hint, required }) {
+  const [show, setShow] = useState(false);
+  const isPassword = type === 'password';
+  useEffect(() => { if (window.lucide) window.lucide.createIcons(); });
+  return (
+    <div>
+      <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--neutral-700)', marginBottom: 6 }}>
+        {label}{required && <span style={{ color: 'var(--mayam-blue)', marginLeft: 3 }}>*</span>}
+      </label>
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 10,
+        border: '1px solid var(--border-strong)', borderRadius: 10,
+        padding: '11px 14px', background: '#fff',
+        transition: 'border-color 150ms',
+      }}>
+        <i data-lucide={icon} style={{ width: 16, height: 16, color: 'var(--fg-muted)', flexShrink: 0 }}></i>
+        <input
+          type={isPassword && show ? 'text' : type}
+          value={value}
+          onChange={e => onChange(e.target.value)}
+          placeholder={placeholder}
+          required={required}
+          style={{
+            border: 'none', outline: 'none', flex: 1,
+            fontSize: 14, color: 'var(--fg-strong)',
+            fontFamily: 'var(--font-sans)', background: 'transparent',
+          }}
+        />
+        {isPassword && (
+          <button type="button" onClick={() => setShow(s => !s)}
+            style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--fg-muted)', padding: 0, display: 'flex' }}>
+            <i data-lucide={show ? 'eye-off' : 'eye'} style={{ width: 15, height: 15 }}></i>
+          </button>
+        )}
+      </div>
+      {hint && <p style={{ fontSize: 12, color: 'var(--fg-muted)', margin: '5px 0 0 0' }}>{hint}</p>}
+    </div>
+  );
+}
+
+function GestorPage() {
+  const [form, setForm] = useState({ nombre: '', email: '', password: '', confirm: '', code: '' });
+  const [status, setStatus] = useState(null);
+  const [errorMsg, setErrorMsg] = useState('');
+
+  useEffect(() => { if (window.lucide) window.lucide.createIcons(); });
+
+  const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setErrorMsg('');
+
+    if (form.code !== COMPANY_CODE) {
+      setErrorMsg('El código de empresa no es válido. Verifica con tu coordinador MAYAM.');
+      return;
+    }
+    if (form.password.length < 8) {
+      setErrorMsg('La contraseña debe tener al menos 8 caracteres.');
+      return;
+    }
+    if (form.password !== form.confirm) {
+      setErrorMsg('Las contraseñas no coinciden.');
+      return;
+    }
+
+    setStatus('loading');
+    const { error } = await sb.auth.signUp({
+      email: form.email,
+      password: form.password,
+      options: { data: { full_name: form.nombre } },
+    });
+
+    if (error) {
+      setErrorMsg(error.message === 'User already registered'
+        ? 'Este correo ya tiene una cuenta. Ve al editor para iniciar sesión.'
+        : error.message);
+      setStatus('error');
+    } else {
+      setStatus('success');
+    }
+  }
+
+  if (status === 'success') {
+    return (
+      <>
+        <Header active="" />
+        <main style={{ background: 'var(--neutral-050)', minHeight: '90vh', display: 'grid', placeItems: 'center', padding: '48px 24px' }}>
+          <div style={{ textAlign: 'center', maxWidth: 520 }}>
+            <div style={{
+              width: 80, height: 80, borderRadius: '50%',
+              background: 'var(--blue-050)', color: 'var(--mayam-blue)',
+              display: 'grid', placeItems: 'center', margin: '0 auto 28px',
+              boxShadow: '0 0 0 12px var(--blue-050)',
+            }}>
+              <i data-lucide="check-circle" style={{ width: 40, height: 40 }}></i>
+            </div>
+            <h1 style={{ fontSize: 32, fontWeight: 600, margin: '0 0 12px 0', letterSpacing: '-0.02em' }}>¡Cuenta creada!</h1>
+            <p style={{ fontSize: 16, color: 'var(--fg-muted)', lineHeight: 1.6, margin: '0 0 12px 0' }}>
+              Hemos enviado un correo de confirmación a <strong style={{ color: 'var(--neutral-800)' }}>{form.email}</strong>.
+            </p>
+            <p style={{ fontSize: 14, color: 'var(--fg-muted)', lineHeight: 1.6, margin: '0 0 32px 0' }}>
+              Revisa tu bandeja (y la carpeta de spam). Una vez que confirmes tu correo podrás acceder al editor del blog.
+            </p>
+            <a href="edicion.html" className="btn btn-primary">
+              <i data-lucide="arrow-right" style={{ width: 16, height: 16 }}></i>
+              Ir al editor
+            </a>
+          </div>
+        </main>
+        <Footer />
+      </>
+    );
+  }
+
+  return (
+    <>
+      <Header active="" />
+      <main style={{
+        background: 'var(--mayam-blue)', minHeight: '90vh',
+        display: 'grid', placeItems: 'center', padding: '48px 24px',
+        position: 'relative', overflow: 'hidden',
+      }}>
+        <div className="y-decoration" style={{ right: '-8rem', bottom: '-4rem', fontSize: '34rem', color: '#fff', opacity: 0.05 }}>Y</div>
+
+        <div style={{ width: '100%', maxWidth: 480, position: 'relative' }}>
+          <div style={{
+            background: '#fff', border: '1px solid rgba(255,255,255,0.3)',
+            borderRadius: 22, padding: '44px 44px',
+            boxShadow: '0 40px 80px rgba(0,0,0,0.25)',
+          }}>
+            {/* Logo + título */}
+            <div style={{ textAlign: 'center', marginBottom: 36 }}>
+              <img src="assets/logo-primary.png" alt="MAYAM" style={{ height: 34, margin: '0 auto 20px' }} />
+              <h1 style={{ fontSize: 26, fontWeight: 600, margin: '0 0 6px 0', letterSpacing: '-0.015em', color: 'var(--neutral-900)' }}>
+                Crear cuenta
+              </h1>
+              <p style={{ fontSize: 14, color: 'var(--fg-muted)', margin: 0 }}>
+                Acceso exclusivo para el equipo MAYAM
+              </p>
+            </div>
+
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <Field
+                label="Nombre completo" type="text" icon="user"
+                value={form.nombre} onChange={v => set('nombre', v)}
+                placeholder="Nombre Apellido" required
+              />
+              <Field
+                label="Correo electrónico" type="email" icon="mail"
+                value={form.email} onChange={v => set('email', v)}
+                placeholder="nombre@mayam.mx" required
+              />
+              <Field
+                label="Contraseña" type="password" icon="lock"
+                value={form.password} onChange={v => set('password', v)}
+                placeholder="Mínimo 8 caracteres" required
+              />
+              <Field
+                label="Confirmar contraseña" type="password" icon="lock"
+                value={form.confirm} onChange={v => set('confirm', v)}
+                placeholder="Repite la contraseña" required
+              />
+              <Field
+                label="Código de empresa" type="password" icon="key"
+                value={form.code} onChange={v => set('code', v)}
+                placeholder="••••••••••" required
+                hint="Proporcionado por tu coordinador MAYAM"
+              />
+
+              {errorMsg && (
+                <div style={{
+                  background: '#fef2f2', border: '1px solid #fecaca',
+                  borderRadius: 10, padding: '12px 16px',
+                  fontSize: 13, color: '#dc2626', lineHeight: 1.5,
+                }}>
+                  {errorMsg}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                className="btn btn-primary"
+                style={{ width: '100%', justifyContent: 'center', marginTop: 8, padding: '14px 22px' }}
+                disabled={status === 'loading'}
+              >
+                {status === 'loading'
+                  ? <><i data-lucide="loader-circle" style={{ width: 16, height: 16 }}></i> Creando cuenta…</>
+                  : <><i data-lucide="user-plus" style={{ width: 16, height: 16 }}></i> Crear cuenta</>
+                }
+              </button>
+            </form>
+
+            <div style={{
+              borderTop: '1px solid var(--border)', marginTop: 28, paddingTop: 20,
+              textAlign: 'center', fontSize: 13, color: 'var(--fg-muted)',
+            }}>
+              ¿Ya tienes cuenta?{' '}
+              <a href="edicion.html" style={{ fontWeight: 600 }}>Ir al editor del blog</a>
+            </div>
+          </div>
+        </div>
+      </main>
+      <Footer />
+      <WhatsAppFloat />
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<GestorPage />);
+</script>
+</body>
+</html>

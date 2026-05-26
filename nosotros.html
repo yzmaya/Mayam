@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Nosotros · MAYAM</title>
+  <meta name="description" content="MAYAM: 10 años haciendo software, 4 implementando IA. Inteligencia artificial accesible para empresas mexicanas." />
+  <link rel="stylesheet" href="assets/base.css" />
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<script type="text/babel" src="components/Shared.jsx"></script>
+<script type="text/babel" src="components/ShaderBg.jsx"></script>
+
+<script type="text/babel">
+const { useEffect } = React;
+
+function AboutHero() {
+  useEffect(() => { if (window.lucide) window.lucide.createIcons(); }, []);
+  const ShaderBg = window.ShaderBackground;
+  return (
+    <section style={{ background: 'var(--mayam-blue)', color: '#fff', position: 'relative', overflow: 'hidden', padding: '90px 0 110px', cursor: 'pointer' }}>
+      {ShaderBg && <ShaderBg />}
+      <div className="y-decoration" style={{ right: '-8rem', top: '-4rem', fontSize: '40rem', color: '#fff', opacity: 0.06 }}>Y</div>
+      <div className="container" style={{ position: 'relative' }}>
+        <span style={{
+          display: 'inline-flex', alignItems: 'center', gap: 8,
+          padding: '6px 14px', borderRadius: 999,
+          background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)',
+          fontSize: 12, fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase',
+          marginBottom: 28,
+        }}>
+          <i data-lucide="sparkles" style={{ width: 14, height: 14 }}></i> Sobre MAYAM
+        </span>
+        <h1 style={{
+          fontSize: 'clamp(40px, 6vw, 84px)', lineHeight: 1.02, letterSpacing: '-0.025em',
+          fontWeight: 600, color: '#fff', margin: '0 0 24px 0', maxWidth: 1000, textWrap: 'balance',
+        }}>
+          Todo es posible cuando <span style={{ fontStyle: 'italic', fontWeight: 400, opacity: 0.9 }}>la IA</span> trabaja con la gente.
+        </h1>
+        <p style={{ fontSize: 22, color: 'rgba(255,255,255,0.85)', lineHeight: 1.5, margin: 0, maxWidth: 760 }}>
+          Somos una firma mexicana de implementación de IA. Diez años haciendo software empresarial. Cuatro adoptando inteligencia artificial dentro de las empresas con las que trabajamos.
+        </p>
+      </div>
+    </section>
+  );
+}
+
+function StatsBand() {
+  const stats = [
+    { n: '10', s: 'años', l: 'desarrollando software empresarial' },
+    { n: '4', s: 'años', l: 'implementando IA generativa' },
+    { n: '—', s: '', l: 'clientes activos en México (placeholder)' },
+    { n: 'ISO', s: '42001', l: 'marco de gestión de IA aplicado' },
+  ];
+  return (
+    <section className="section">
+      <div className="container">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 32, padding: '0 0 16px' }}>
+          {stats.map((st, i) => (
+            <div key={i} style={{
+              borderTop: '2px solid var(--mayam-blue)', paddingTop: 20,
+            }}>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: 56, fontWeight: 600, lineHeight: 1, letterSpacing: '-0.03em', color: 'var(--neutral-900)' }}>
+                {st.n}{st.s && <span style={{ fontSize: 22, marginLeft: 6, color: 'var(--mayam-blue)' }}>{st.s}</span>}
+              </div>
+              <div style={{ marginTop: 12, fontSize: 14, color: 'var(--fg-muted)', lineHeight: 1.5 }}>{st.l}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ManifestoSection() {
+  return (
+    <section className="section section-subtle">
+      <div className="container">
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.5fr', gap: 64, alignItems: 'start' }} className="about-grid">
+          <div>
+            <span className="eyebrow">Manifiesto</span>
+            <h2 style={{ fontSize: 'clamp(32px, 4vw, 48px)', lineHeight: 1.05, letterSpacing: '-0.02em', fontWeight: 600, margin: 0 }}>
+              La IA debería sumarle <span style={{ fontStyle: 'italic', color: 'var(--mayam-blue)' }}>a la gente</span>, no reemplazarla.
+            </h2>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
+            <p style={{ fontSize: 18, lineHeight: 1.65, color: 'var(--fg)', margin: 0 }}>
+              Empezamos como casa de software hace una década. En 2022 vimos que la IA generativa cambiaba la forma en que se construyen productos. No nos volvimos una agencia de IA: nos volvimos una firma que implementa IA dentro de empresas reales, con sus procesos, su gente y sus restricciones.
+            </p>
+            <p style={{ fontSize: 18, lineHeight: 1.65, color: 'var(--fg)', margin: 0 }}>
+              Creemos en la IA como amplificador. Creemos en hablar claro, en cobrar lo justo y en decir <em>"esto no se debe hacer con IA"</em> cuando toca. Trabajamos bajo marcos como ISO/IEC 42001 porque la responsabilidad técnica importa.
+            </p>
+            <p style={{ fontSize: 18, lineHeight: 1.65, color: 'var(--fg)', margin: 0 }}>
+              MAYAM viene de la tradición de hacer las cosas con cuidado. La Y de nuestro símbolo representa la unión entre la inteligencia humana y la artificial. Nada se entrega si no funciona en la operación real del cliente.
+            </p>
+          </div>
+        </div>
+      </div>
+      <style>{`@media (max-width: 899px) { .about-grid { grid-template-columns: 1fr !important; gap: 32px !important; } }`}</style>
+    </section>
+  );
+}
+
+function ValuesSection() {
+  useEffect(() => { if (window.lucide) window.lucide.createIcons(); }, []);
+  const values = [
+    { icon: 'compass', t: 'Claridad técnica', d: 'No vendemos magia. Explicamos qué hace cada modelo, qué no, y cuánto cuesta operarlo.' },
+    { icon: 'shield-check', t: 'Responsabilidad', d: 'Trazabilidad de datos, ética en el diseño y respeto por el trabajo de quien usará la herramienta.' },
+    { icon: 'wrench', t: 'Hecho a la mano', d: 'No empaquetamos software ajeno. Construimos cada agente, cada flujo y cada programa para tu caso.' },
+    { icon: 'users', t: 'Cerca de la gente', d: 'Pasamos tiempo en piso, en call center, en planta. La IA se diseña con quien la va a usar.' },
+    { icon: 'gauge', t: 'Resultado medible', d: 'Cada engagement tiene una métrica antes de empezar. Si no se mueve, lo replanteamos juntos.' },
+    { icon: 'globe', t: 'Mexicanos, globales', d: 'Hablamos español, inglés y portugués. Operamos para clientes en México, US y Latam.' },
+  ];
+  return (
+    <section className="section">
+      <div className="container">
+        <div className="section-header">
+          <span className="eyebrow">Cómo trabajamos</span>
+          <h2>Seis principios que aplicamos en cada proyecto.</h2>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24 }}>
+          {values.map((v, i) => (
+            <div key={i} style={{
+              border: '1px solid var(--border)', borderRadius: 16, padding: 28, background: '#fff',
+            }}>
+              <div style={{
+                width: 44, height: 44, borderRadius: 10,
+                background: 'var(--blue-050)', color: 'var(--mayam-blue)',
+                display: 'grid', placeItems: 'center', marginBottom: 20,
+              }}>
+                <i data-lucide={v.icon} style={{ width: 22, height: 22 }}></i>
+              </div>
+              <h3 style={{ fontSize: 18, fontWeight: 600, margin: '0 0 8px 0' }}>{v.t}</h3>
+              <p style={{ fontSize: 14, color: 'var(--fg-muted)', lineHeight: 1.55, margin: 0 }}>{v.d}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function FinalCTA() {
+  return (
+    <section className="section" style={{ background: 'var(--mayam-blue)', color: '#fff', position: 'relative', overflow: 'hidden' }}>
+      <div className="y-decoration" style={{ left: '-6rem', bottom: '-8rem', fontSize: '32rem', color: '#fff', opacity: 0.07 }}>Y</div>
+      <div className="container" style={{ position: 'relative', textAlign: 'center', maxWidth: 800 }}>
+        <h2 style={{ fontSize: 'clamp(32px, 4.5vw, 56px)', color: '#fff', lineHeight: 1.05, letterSpacing: '-0.02em', margin: '0 0 20px 0' }}>
+          ¿Listos para una primera conversación?
+        </h2>
+        <p style={{ fontSize: 18, color: 'rgba(255,255,255,0.85)', margin: '0 0 32px 0', lineHeight: 1.55 }}>
+          Te escuchamos 30 minutos sin compromiso. Salimos de la llamada con 2 o 3 ideas concretas para tu operación.
+        </p>
+        <a className="btn btn-on-blue" href="contacto.html">Agendar diagnóstico</a>
+      </div>
+    </section>
+  );
+}
+
+function Page() {
+  return (
+    <>
+      <Header active="nosotros.html" />
+      <main>
+        <AboutHero />
+        <StatsBand />
+        <ManifestoSection />
+        <ValuesSection />
+        <FinalCTA />
+      </main>
+      <Footer />
+      <WhatsAppFloat />
+    </>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<Page />);
+</script>
+</body>
+</html>

@@ -1,0 +1,323 @@
+/* ==========================================================================
+   MAYAM Design System — Colors & Type
+   Source of truth: Manual de Identidad Corporativa (Binomiográfico, Oct 2023)
+   ========================================================================== */
+
+/* ---------- Webfont (Montserrat — official MAYAM typeface, self-hosted) ---------- */
+@font-face { font-family: "Montserrat"; src: url("./fonts/Montserrat-Thin.ttf") format("truetype"); font-weight: 100; font-style: normal; font-display: swap; }
+@font-face { font-family: "Montserrat"; src: url("./fonts/Montserrat-ThinItalic.ttf") format("truetype"); font-weight: 100; font-style: italic; font-display: swap; }
+@font-face { font-family: "Montserrat"; src: url("./fonts/Montserrat-ExtraLight.ttf") format("truetype"); font-weight: 200; font-style: normal; font-display: swap; }
+@font-face { font-family: "Montserrat"; src: url("./fonts/Montserrat-ExtraLightItalic.ttf") format("truetype"); font-weight: 200; font-style: italic; font-display: swap; }
+@font-face { font-family: "Montserrat"; src: url("./fonts/Montserrat-Light.ttf") format("truetype"); font-weight: 300; font-style: normal; font-display: swap; }
+@font-face { font-family: "Montserrat"; src: url("./fonts/Montserrat-LightItalic.ttf") format("truetype"); font-weight: 300; font-style: italic; font-display: swap; }
+@font-face { font-family: "Montserrat"; src: url("./fonts/Montserrat-Regular.ttf") format("truetype"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Montserrat"; src: url("./fonts/Montserrat-Italic.ttf") format("truetype"); font-weight: 400; font-style: italic; font-display: swap; }
+@font-face { font-family: "Montserrat"; src: url("./fonts/Montserrat-Medium.ttf") format("truetype"); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: "Montserrat"; src: url("./fonts/Montserrat-MediumItalic.ttf") format("truetype"); font-weight: 500; font-style: italic; font-display: swap; }
+@font-face { font-family: "Montserrat"; src: url("./fonts/Montserrat-SemiBold.ttf") format("truetype"); font-weight: 600; font-style: normal; font-display: swap; }
+@font-face { font-family: "Montserrat"; src: url("./fonts/Montserrat-SemiBoldItalic.ttf") format("truetype"); font-weight: 600; font-style: italic; font-display: swap; }
+
+:root {
+  /* ============================
+     COLORS — BRAND
+     ============================ */
+  /* Pantone 2132 C — Azul MAYAM. Inteligencia, sabiduría, tecnología, innovación. */
+  --mayam-blue: #005abf;
+  --mayam-blue-rgb: 0, 90, 191;
+
+  /* Pantone 7540 C — Gris MAYAM. Seguridad, madurez, fiabilidad, conocimiento. */
+  --mayam-gray: #4a4f54;
+  --mayam-gray-rgb: 74, 79, 84;
+
+  /* Neutrals derived from the gray, kept tonally consistent with #4a4f54 */
+  --neutral-000: #ffffff;
+  --neutral-050: #f6f7f8;
+  --neutral-100: #eceef0;
+  --neutral-200: #d6d9dc;
+  --neutral-300: #b3b7bb;
+  --neutral-400: #8a8e93;
+  --neutral-500: #6a6e73;
+  --neutral-600: #4a4f54; /* = mayam-gray */
+  --neutral-700: #383c40;
+  --neutral-800: #26292c;
+  --neutral-900: #15171a;
+
+  /* Blue scale — built around #005abf */
+  --blue-050: #e6eefb;
+  --blue-100: #c4d6f5;
+  --blue-200: #8eb1ec;
+  --blue-300: #4d85e0;
+  --blue-400: #1a66cf;
+  --blue-500: #005abf; /* = mayam-blue */
+  --blue-600: #004ba0;
+  --blue-700: #003c80;
+  --blue-800: #002c5e;
+  --blue-900: #001d3f;
+
+  /* ============================
+     SEMANTIC COLOR TOKENS
+     ============================ */
+  --bg:           var(--neutral-000);
+  --bg-subtle:    var(--neutral-050);
+  --bg-muted:     var(--neutral-100);
+  --bg-inverse:   var(--mayam-gray);
+  --bg-brand:     var(--mayam-blue);
+
+  --fg:           var(--mayam-gray);     /* primary text — gray, not pure black */
+  --fg-strong:    var(--neutral-800);
+  --fg-muted:     var(--neutral-500);
+  --fg-subtle:    var(--neutral-400);
+  --fg-inverse:   var(--neutral-000);
+  --fg-brand:     var(--mayam-blue);
+  --fg-on-brand:  var(--neutral-000);
+
+  --border:        var(--neutral-200);
+  --border-strong: var(--neutral-300);
+  --border-brand:  var(--mayam-blue);
+
+  --accent:        var(--mayam-blue);
+  --accent-hover:  var(--blue-600);
+  --accent-press:  var(--blue-700);
+
+  /* Status — kept inside the brand palette (blue + gray scales).
+     No green/yellow/red; differentiation is by tone within the scales. */
+  --success: var(--blue-700);
+  --warning: var(--blue-400);
+  --danger:  var(--neutral-700);
+  --info:    var(--mayam-blue);
+
+  /* ============================
+     TYPOGRAPHY — FAMILIES
+     ============================ */
+  --font-sans: "Montserrat", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Montserrat", system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+  /* ============================
+     TYPE SCALE  (1.25 — major third)
+     Base 16px
+     ============================ */
+  --fs-xs:   12px;
+  --fs-sm:   14px;
+  --fs-md:   16px;   /* body */
+  --fs-lg:   18px;
+  --fs-xl:   20px;
+  --fs-2xl:  24px;
+  --fs-3xl:  30px;
+  --fs-4xl:  38px;
+  --fs-5xl:  48px;
+  --fs-6xl:  60px;
+  --fs-7xl:  76px;
+  --fs-8xl:  96px;
+
+  /* Weights — Montserrat (self-hosted: 100/200/300/400/500/600 + italics).
+     700+ available via system fallback only — keep brand work at ≤ 600. */
+  --fw-thin:      100;
+  --fw-extralight:200;
+  --fw-light:    300;
+  --fw-regular:  400;
+  --fw-medium:   500;
+  --fw-semibold: 600;
+  --fw-bold:     600; /* alias — official package caps at SemiBold */
+  --fw-extrabold:600;
+  --fw-black:    600;
+
+  /* Line heights */
+  --lh-tight:   1.05;
+  --lh-snug:    1.2;
+  --lh-normal:  1.45;
+  --lh-relaxed: 1.6;
+
+  /* Tracking — uppercase tag-line style needs generous spacing (see logo) */
+  --ls-tight:   -0.02em;
+  --ls-normal:   0;
+  --ls-wide:     0.04em;
+  --ls-wider:    0.12em;   /* tag line: "TODO ES POSIBLE" */
+  --ls-widest:   0.20em;   /* small caps eyebrows */
+
+  /* ============================
+     SPACING — 4px base
+     ============================ */
+  --space-0:   0;
+  --space-1:   4px;
+  --space-2:   8px;
+  --space-3:   12px;
+  --space-4:   16px;
+  --space-5:   20px;
+  --space-6:   24px;
+  --space-8:   32px;
+  --space-10:  40px;
+  --space-12:  48px;
+  --space-16:  64px;
+  --space-20:  80px;
+  --space-24:  96px;
+  --space-32:  128px;
+
+  /* ============================
+     RADII — modest, not pill-heavy.
+     Logo letterforms have rounded stroke ends; mirror that subtly.
+     ============================ */
+  --radius-none:  0;
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+  --radius-lg:    12px;
+  --radius-xl:    20px;
+  --radius-pill:  999px;
+
+  /* ============================
+     SHADOWS — soft, neutral-tinted
+     ============================ */
+  --shadow-xs: 0 1px 2px rgba(21, 23, 26, 0.06);
+  --shadow-sm: 0 1px 3px rgba(21, 23, 26, 0.08), 0 1px 2px rgba(21, 23, 26, 0.04);
+  --shadow-md: 0 4px 8px rgba(21, 23, 26, 0.08), 0 2px 4px rgba(21, 23, 26, 0.04);
+  --shadow-lg: 0 12px 24px rgba(21, 23, 26, 0.10), 0 4px 8px rgba(21, 23, 26, 0.04);
+  --shadow-xl: 0 24px 48px rgba(21, 23, 26, 0.14), 0 8px 16px rgba(21, 23, 26, 0.06);
+  --shadow-brand: 0 12px 32px rgba(0, 90, 191, 0.28);
+  --shadow-inset: inset 0 1px 2px rgba(21, 23, 26, 0.08);
+
+  /* ============================
+     MOTION
+     ============================ */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-emphasized: cubic-bezier(0.2, 0, 0, 1.05);
+  --ease-out:      cubic-bezier(0, 0, 0.2, 1);
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 320ms;
+
+  /* Layout */
+  --container-sm:  640px;
+  --container-md:  860px;
+  --container-lg:  1100px;
+  --container-xl:  1280px;
+  --container-2xl: 1480px;
+}
+
+/* ==========================================================================
+   SEMANTIC TYPE STYLES
+   ========================================================================== */
+html { font-family: var(--font-sans); color: var(--fg); background: var(--bg); }
+body { font-size: var(--fs-md); line-height: var(--lh-normal); font-weight: var(--fw-regular); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+.h-display, h1.display {
+  font-family: var(--font-display);
+  font-size: var(--fs-7xl);
+  font-weight: var(--fw-extrabold);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-tight);
+  color: var(--fg-strong);
+  text-wrap: balance;
+}
+
+h1, .h1 {
+  font-family: var(--font-display);
+  font-size: var(--fs-5xl);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-tight);
+  color: var(--fg-strong);
+  text-wrap: balance;
+}
+
+h2, .h2 {
+  font-family: var(--font-display);
+  font-size: var(--fs-3xl);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-snug);
+  letter-spacing: -0.01em;
+  color: var(--fg-strong);
+  text-wrap: balance;
+}
+
+h3, .h3 {
+  font-family: var(--font-display);
+  font-size: var(--fs-2xl);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-snug);
+  color: var(--fg-strong);
+}
+
+h4, .h4 {
+  font-family: var(--font-sans);
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-snug);
+  color: var(--fg-strong);
+}
+
+h5, .h5 {
+  font-family: var(--font-sans);
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-normal);
+  color: var(--fg-strong);
+}
+
+p, .p {
+  font-family: var(--font-sans);
+  font-size: var(--fs-md);
+  font-weight: var(--fw-regular);
+  line-height: var(--lh-relaxed);
+  color: var(--fg);
+  text-wrap: pretty;
+}
+
+.lede {
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-regular);
+  line-height: var(--lh-relaxed);
+  color: var(--fg);
+}
+
+.small, small {
+  font-size: var(--fs-sm);
+  line-height: var(--lh-normal);
+  color: var(--fg-muted);
+}
+
+.caption {
+  font-size: var(--fs-xs);
+  line-height: var(--lh-normal);
+  color: var(--fg-muted);
+}
+
+/* Eyebrow / tag line — based on the logo's "TODO ES POSIBLE" pattern */
+.eyebrow, .tagline {
+  font-family: var(--font-sans);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  text-transform: uppercase;
+  letter-spacing: var(--ls-wider);
+  color: var(--fg-brand);
+}
+
+.tagline-strong {
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--ls-widest);
+  text-transform: uppercase;
+  color: var(--fg-brand);
+}
+
+code, kbd, samp, .mono {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  background: var(--bg-muted);
+  padding: 0.12em 0.36em;
+  border-radius: var(--radius-xs);
+  color: var(--fg-strong);
+}
+
+a {
+  color: var(--fg-brand);
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+a:hover { color: var(--accent-hover); text-decoration: underline; text-underline-offset: 3px; }
+a:active { color: var(--accent-press); }
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: var(--space-8) 0;
+}

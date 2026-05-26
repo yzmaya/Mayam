@@ -1,0 +1,847 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- ── Título y descripción ── -->
+  <title>Blog · MAYAM — IA y Estrategia Empresarial</title>
+  <meta name="description" content="Análisis, reflexiones y tendencias sobre inteligencia artificial, liderazgo tecnológico y estrategia empresarial escritos por el equipo MAYAM para líderes en México y Latinoamérica." />
+  <meta name="keywords" content="inteligencia artificial, IA empresarial, automatización, agentes IA, WhatsApp business, consultoría IA, estrategia tecnológica, MAYAM, México, CDMX, Latinoamérica, liderazgo tecnológico" />
+  <meta name="author" content="MAYAM" />
+  <meta name="language" content="es" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
+  <meta name="theme-color" content="#005abf" />
+
+  <!-- ── Canonical ── -->
+  <link rel="canonical" href="https://mayam.mx/blog.html" />
+
+  <!-- ── Open Graph (Facebook, LinkedIn, WhatsApp) ── -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://mayam.mx/blog.html" />
+  <meta property="og:site_name" content="MAYAM" />
+  <meta property="og:title" content="Blog MAYAM · Inteligencia Artificial y Estrategia Empresarial" />
+  <meta property="og:description" content="Análisis y tendencias sobre IA, liderazgo tecnológico y estrategia empresarial para líderes en México y Latinoamérica." />
+  <meta property="og:image" content="https://mayam.mx/assets/logo-primary.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:locale" content="es_MX" />
+
+  <!-- ── Twitter Card ── -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@mayam_mx" />
+  <meta name="twitter:title" content="Blog MAYAM · IA y Estrategia Empresarial" />
+  <meta name="twitter:description" content="Análisis y tendencias sobre IA, liderazgo y estrategia para líderes en México y Latinoamérica." />
+  <meta name="twitter:image" content="https://mayam.mx/assets/logo-primary.png" />
+
+  <!-- ── GEO — SEO Local ── -->
+  <meta name="geo.region" content="MX-CMX" />
+  <meta name="geo.placename" content="Ciudad de México, México" />
+  <meta name="geo.position" content="19.4326;-99.1332" />
+  <meta name="ICBM" content="19.4326, -99.1332" />
+
+  <!-- ── JSON-LD: Blog + Organization ── -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Blog",
+        "@id": "https://mayam.mx/blog.html",
+        "name": "Blog MAYAM",
+        "url": "https://mayam.mx/blog.html",
+        "description": "Análisis, reflexiones y tendencias sobre inteligencia artificial y estrategia empresarial escritos por el equipo MAYAM.",
+        "inLanguage": "es-MX",
+        "keywords": "inteligencia artificial, IA empresarial, automatización, México",
+        "publisher": {
+          "@id": "https://mayam.mx/#organization"
+        }
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://mayam.mx/#organization",
+        "name": "MAYAM",
+        "url": "https://mayam.mx",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://mayam.mx/assets/logo-primary.png"
+        },
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Villa Cacama 18, Villa de Aragón",
+          "addressLocality": "Gustavo A. Madero",
+          "addressRegion": "CDMX",
+          "postalCode": "07570",
+          "addressCountry": "MX"
+        },
+        "areaServed": ["MX", "US", "LATAM"],
+        "description": "Firma mexicana de implementación de inteligencia artificial. Agentes para WhatsApp, capacitación, maquila de video con IA y consultoría.",
+        "sameAs": [
+          "https://www.linkedin.com/company/mayam-mx"
+        ]
+      }
+    ]
+  }
+  </script>
+
+  <link rel="stylesheet" href="assets/base.css" />
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<script type="text/babel" src="components/Shared.jsx"></script>
+<script type="text/babel" src="components/ShaderBg.jsx"></script>
+
+<script type="text/babel">
+const SUPABASE_URL  = 'https://wbujrdnolbdcleejnrft.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndidWpyZG5vbGJkY2xlZWpucmZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3MTUzNTUsImV4cCI6MjA5NTI5MTM1NX0.vkzxEe7tvbXwQOOYGYKEJbsXQ-HOAobxnB-PRxOpkCc';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+/* Normaliza un post de Supabase al formato que usa el componente */
+function normalizeDbPost(p) {
+  return {
+    id: p.id,
+    category: p.category,
+    categoryIcon: p.category_icon || 'file-text',
+    title: p.title,
+    excerpt: p.excerpt || '',
+    author: p.author_name,
+    date: p.published_at
+      ? new Date(p.published_at).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' })
+      : '',
+    rawDate: p.published_at || p.created_at,
+    readTime: `${p.read_time_minutes || 3} min de lectura`,
+    image: p.image_url || '',
+    featured: p.featured,
+    content: Array.isArray(p.content) ? p.content : [],
+  };
+}
+
+const { useEffect, useState, useRef } = React;
+
+/* Posts de respaldo (se muestran mientras no haya datos en Supabase) */
+const FALLBACK_POSTS = [
+  {
+    id: 1,
+    category: 'IA & Legal',
+    categoryIcon: 'scale',
+    title: 'Implicaciones del fallo Musk vs. OpenAI: Seguridad jurídica e hitos financieros en la industria de la IA ⚖️📈',
+    excerpt: 'El reciente fallo unánime de un jurado federal en Oakland a favor de Sam Altman, Greg Brockman y OpenAI marca un hito regulatorio y comercial en el ecosistema tecnológico. Al desestimar la demanda bajo el estatuto de limitaciones, el tribunal valida la viabilidad de los modelos híbridos para sostener la innovación a gran escala.',
+    author: 'Gibrán Torreblanca',
+    date: '20 mayo 2026',
+    rawDate: '2026-05-20',
+    readTime: '5 min de lectura',
+    image: 'https://media.licdn.com/dms/image/v2/D5622AQG2EHg9wcZtQw/feedshare-shrink_800/B56Z5LfuRSKUAc-/0/1779383068002?e=1781136000&v=beta&t=bK4jkZVeGs9EEt7-RnCBQ_iawbuElePhTWYQgavOn2c',
+    content: [
+      { type: 'lead', text: 'El reciente fallo unánime de un jurado federal en Oakland a favor de Sam Altman, Greg Brockman y OpenAI marca un hito regulatorio y comercial en el ecosistema tecnológico. Al desestimar la demanda de Elon Musk bajo el argumento del estatuto de limitaciones (prescripción), el tribunal no solo mitiga la incertidumbre legal que rodeaba a la compañía, sino que valida la viabilidad de los modelos híbridos (for-profit / non-profit) para sostener la innovación a gran escala.' },
+      { type: 'bullets', items: [
+        { icon: 'scale', label: 'Gobernanza y Estructura Corporativa', text: 'El fallo ratifica la estabilidad del esquema comercial de OpenAI y asegura la continuidad estratégica de sus alianzas clave, como el partnership con Microsoft.' },
+        { icon: 'trending-up', label: 'Certidumbre para los Inversores', text: 'La resolución elimina de manera temporal un riesgo sistémico mayor, pavimentando una trayectoria sólida hacia una potencial Oferta Pública Inicial (IPO) proyectada en una valoración histórica de $1 billón de dólares ($1tn).' },
+        { icon: 'clock', label: 'El factor temporal en litigios de tecnología', text: 'La defensa de OpenAI logró demostrar con éxito que el demandante poseía conocimiento de las reestructuraciones corporativas desde 2017, fijando un precedente relevante en la oportunidad procesal dentro del sector.' },
+        { icon: 'alert-circle', label: 'Perspectiva de apelación', text: 'Aunque la representación legal de Musk escalará el caso a la Corte de Apelaciones del Noveno Circuito, analistas corporativos sugieren que revertir un veredicto de hechos dictado por un jurado presenta una alta complejidad jurídica.' },
+      ]},
+      { type: 'question', text: '¿Considera que este fallo acelerará la consolidación de modelos puramente comerciales en el desarrollo de la IA de frontera, o se mantendrá la necesidad de contrapesos éticos y filantrópicos?' },
+    ],
+  },
+  {
+    id: 2,
+    category: 'Herramientas de IA',
+    categoryIcon: 'cpu',
+    title: 'El punto de inflexión en la economía creativa: Google DeepMind presenta Gemini Omni y redefine la producción multimodal 📈🌐',
+    excerpt: 'Durante el Google I/O, se oficializó el lanzamiento de Gemini Omni, catalogado como "Modelo del Mundo". Este avance representa un salto cuántico en los procesos de automatización y generación de contenido, fusionando capacidades avanzadas de razonamiento con la creación de video en lenguaje natural.',
+    author: 'Gibrán Torreblanca',
+    date: '21 mayo 2026',
+    rawDate: '2026-05-21',
+    readTime: '4 min de lectura',
+    image: 'https://media.licdn.com/dms/image/v2/D5622AQHRb4JIKA2J_Q/feedshare-image-high-res/B56Z5L13UgKIAU-/0/1779388872212?e=1781136000&v=beta&t=D4_6MVtV96WTeTqNVz49WmBX6xxnfVn4T_7nRP1sQjo',
+    content: [
+      { type: 'lead', text: 'Durante el Google I/O, se oficializó el lanzamiento de Gemini Omni, una tecnología catalogada como "Modelo del Mundo". Este avance representa un salto cuántico en los procesos de automatización y generación de contenido, fusionando capacidades avanzadas de razonamiento con la creación y edición de video a través de interfaces conversacionales en lenguaje natural.' },
+      { type: 'subheading', text: 'Lo que necesitas saber:' },
+      { type: 'bullets', items: [
+        { icon: 'zap', label: 'Optimización de flujos de trabajo', text: 'La llegada de la variante Gemini Omni Flash democratiza la edición multimedia avanzada, permitiendo a las empresas iterar prototipos visuales y materiales de marketing sin la necesidad de largos procesos de postproducción.' },
+        { icon: 'brain', label: 'Comprensión contextual profunda', text: 'Al integrar nociones de física del mundo real con conocimiento histórico y cultural, el modelo reduce los errores lógicos habituales de las IA generativas de video tradicionales.' },
+        { icon: 'rocket', label: 'Ventaja competitiva para PYMEs', text: 'Su próxima integración nativa en plataformas globales como YouTube abre un abanico de posibilidades para la escala de campañas de video de alto impacto con costos de inferencia y producción radicalmente menores.' },
+      ]},
+      { type: 'paragraph', text: 'Como profesionales y líderes en la industria, nos enfrentamos a un cambio de paradigma donde la barrera técnica de la producción audiovisual se reduce a cero.' },
+      { type: 'question', text: '¿Cómo planea su organización integrar la IA conversacional en sus estrategias de comunicación y desarrollo de producto para este año?' },
+    ],
+  },
+  {
+    id: 3,
+    category: 'Liderazgo & Ética',
+    categoryIcon: 'heart-handshake',
+    title: 'Liderazgo y Equidad: El nuevo estándar en el ecosistema de la IA',
+    excerpt: 'La reciente colaboración entre Anthropic y la Bill & Melinda Gates Foundation marca un punto de inflexión en la industria. Anthropic refuerza su posicionamiento como el líder en "IA con propósito", priorizando la seguridad y el despliegue ético en sectores como la salud, la educación y la infraestructura económica global.',
+    author: 'Gibrán Torreblanca',
+    date: '18 mayo 2026',
+    rawDate: '2026-05-18',
+    readTime: '4 min de lectura',
+    image: 'https://media.licdn.com/dms/image/v2/D4E22AQFU5j1z7rvEeA/feedshare-shrink_800/B4EZ4ooAc2IIAc-/0/1778798037125?e=1781136000&v=beta&t=C-xqUctzu0dOm9agdqHGVrC_--5yEGQhpJfRBvpq0W0',
+    content: [
+      { type: 'lead', text: 'La reciente colaboración entre Anthropic y la Bill & Melinda Gates Foundation marca un punto de inflexión en la industria. Mientras la carrera por la capacidad de cómputo continúa, Anthropic refuerza su posicionamiento como el líder en "IA con propósito", priorizando la seguridad y el despliegue ético en sectores fundamentales como la salud, la educación y la infraestructura económica global.' },
+      { type: 'subheading', text: 'Análisis de impacto:' },
+      { type: 'bullets', items: [
+        { icon: 'globe', label: 'Democratización Tecnológica', text: 'Integración de modelos de lenguaje avanzado en sistemas estatales y de salud en países en desarrollo.' },
+        { icon: 'shield-check', label: 'Seguridad y Ética', text: 'Un enfoque en el "Constitutional AI" aplicado a contextos de alta sensibilidad social.' },
+        { icon: 'bar-chart-2', label: 'Productividad Exponencial', text: 'Datos recientes indican que herramientas como Claude Code ya están automatizando hasta el 90% del flujo de trabajo técnico, permitiendo que el talento humano se enfoque en la estrategia.' },
+      ]},
+      { type: 'question', text: '¿Considera que las alianzas entre Big Tech y fundaciones globales son el camino más eficiente para regular el impacto ético de la IA?' },
+    ],
+  },
+];
+
+/* ── Helpers ── */
+function AuthorAvatar({ name, size = 40 }) {
+  const initials = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  return (
+    <div style={{
+      width: size, height: size, borderRadius: '50%',
+      background: 'var(--blue-100)', color: 'var(--mayam-blue)',
+      display: 'grid', placeItems: 'center',
+      fontWeight: 600, fontSize: size * 0.38, flexShrink: 0,
+      border: '2px solid var(--blue-200)',
+    }}>
+      {initials}
+    </div>
+  );
+}
+
+function CategoryBadge({ label, icon }) {
+  useEffect(() => { if (window.lucide) window.lucide.createIcons(); });
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', gap: 6,
+      fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase',
+      color: 'var(--mayam-blue)', background: 'var(--blue-050)',
+      padding: '5px 11px', borderRadius: 999,
+    }}>
+      <i data-lucide={icon} style={{ width: 12, height: 12 }}></i>
+      {label}
+    </span>
+  );
+}
+
+/* ── Blog Modal ── */
+function BlogModal({ post, onClose }) {
+  useEffect(() => {
+    if (!post) return;
+    function onKey(e) { if (e.key === 'Escape') onClose(); }
+    document.addEventListener('keydown', onKey);
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = '';
+    };
+  }, [post, onClose]);
+
+  useEffect(() => {
+    if (post && window.lucide) window.lucide.createIcons();
+  }, [post]);
+
+  if (!post) return null;
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="blog-modal-title"
+      onClick={onClose}
+      style={{
+        position: 'fixed', inset: 0, zIndex: 100,
+        background: 'rgba(10, 18, 36, 0.60)',
+        backdropFilter: 'blur(10px)',
+        WebkitBackdropFilter: 'blur(10px)',
+        display: 'grid', placeItems: 'center',
+        padding: 24,
+        animation: 'mayam-fade-in 200ms cubic-bezier(0.2,0,0,1)',
+      }}
+    >
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{
+          width: '100%', maxWidth: 1100, maxHeight: '92vh',
+          background: '#fff', borderRadius: 22, overflow: 'hidden',
+          display: 'grid', gridTemplateColumns: '420px 1fr',
+          boxShadow: '0 40px 90px rgba(0,0,0,0.38)',
+          animation: 'mayam-pop-in 280ms cubic-bezier(0.2,0,0,1.05)',
+        }}
+        className="blog-modal-inner"
+      >
+        {/* Left: imagen */}
+        <div style={{ position: 'relative', overflow: 'hidden', minHeight: 480 }}>
+          <img
+            src={post.image}
+            alt={post.title}
+            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+            onError={e => { e.target.style.display = 'none'; e.target.parentNode.style.background = 'var(--blue-900)'; }}
+          />
+          <div style={{
+            position: 'absolute', inset: 0,
+            background: 'linear-gradient(to top, rgba(0,28,80,0.88) 0%, rgba(0,28,80,0.15) 55%, transparent 100%)',
+          }} />
+          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: 32 }}>
+            <div style={{ marginBottom: 14 }}>
+              <CategoryBadge label={post.category} icon={post.categoryIcon} />
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <AuthorAvatar name={post.author} size={38} />
+              <div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: '#fff' }}>{post.author}</div>
+                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.75)', marginTop: 2 }}>
+                  {post.date} · {post.readTime}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right: contenido */}
+        <div style={{ display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
+          {/* Header barra */}
+          <div style={{
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            padding: '20px 36px 0',
+            position: 'sticky', top: 0, background: '#fff', zIndex: 2,
+            borderBottom: '1px solid var(--border)', paddingBottom: 16,
+          }}>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--mayam-blue)' }}>
+              Blog MAYAM
+            </span>
+            <button
+              onClick={onClose}
+              aria-label="Cerrar"
+              style={{
+                width: 38, height: 38, borderRadius: '50%',
+                border: '1px solid var(--border)', background: '#fff',
+                cursor: 'pointer', display: 'grid', placeItems: 'center',
+                color: 'var(--fg-muted)',
+                transition: 'all 150ms',
+              }}
+            >
+              <i data-lucide="x" style={{ width: 17, height: 17 }}></i>
+            </button>
+          </div>
+
+          {/* Cuerpo del artículo */}
+          <div style={{ padding: '32px 36px 40px', flex: 1 }}>
+            <h2
+              id="blog-modal-title"
+              style={{
+                fontSize: 'clamp(20px, 2vw, 26px)',
+                fontWeight: 600, lineHeight: 1.2, letterSpacing: '-0.015em',
+                color: 'var(--neutral-900)', margin: '0 0 28px 0',
+              }}
+            >
+              {post.title}
+            </h2>
+
+            {post.content.map((block, i) => {
+              if (block.type === 'lead') return (
+                <p key={i} style={{ fontSize: 16, lineHeight: 1.75, color: 'var(--fg)', margin: '0 0 24px 0', fontWeight: 400 }}>
+                  {block.text}
+                </p>
+              );
+              if (block.type === 'paragraph') return (
+                <p key={i} style={{ fontSize: 15, lineHeight: 1.7, color: 'var(--fg)', margin: '0 0 20px 0' }}>
+                  {block.text}
+                </p>
+              );
+              if (block.type === 'subheading') return (
+                <h3 key={i} style={{ fontSize: 15, fontWeight: 600, letterSpacing: '0.04em', color: 'var(--neutral-800)', margin: '28px 0 16px 0', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                  {block.text}
+                </h3>
+              );
+              if (block.type === 'bullets') return (
+                <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 16, margin: '0 0 28px 0' }}>
+                  {block.items.map((item, j) => (
+                    <div key={j} style={{
+                      display: 'flex', gap: 14, alignItems: 'flex-start',
+                      padding: '16px 18px', borderRadius: 12,
+                      background: 'var(--neutral-050)', border: '1px solid var(--border)',
+                    }}>
+                      <div style={{
+                        width: 34, height: 34, borderRadius: 8, flexShrink: 0,
+                        background: 'var(--blue-050)', color: 'var(--mayam-blue)',
+                        display: 'grid', placeItems: 'center',
+                      }}>
+                        <i data-lucide={item.icon} style={{ width: 16, height: 16 }}></i>
+                      </div>
+                      <div>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--neutral-800)', marginBottom: 4 }}>{item.label}</div>
+                        <div style={{ fontSize: 14, color: 'var(--fg-muted)', lineHeight: 1.6 }}>{item.text}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              );
+              if (block.type === 'question') return (
+                <div key={i} style={{
+                  borderLeft: '3px solid var(--mayam-blue)',
+                  paddingLeft: 20, margin: '28px 0 0 0',
+                  color: 'var(--fg-strong)', fontSize: 15, lineHeight: 1.65,
+                  fontStyle: 'italic',
+                }}>
+                  {block.text}
+                </div>
+              );
+              return null;
+            })}
+          </div>
+
+          {/* Footer del modal */}
+          <div style={{
+            padding: '20px 36px 28px',
+            borderTop: '1px solid var(--border)',
+            display: 'flex', gap: 12, flexWrap: 'wrap',
+            position: 'sticky', bottom: 0, background: '#fff',
+          }}>
+            <a href="contacto.html" className="btn btn-primary" style={{ flex: '1 1 auto', justifyContent: 'center' }}>
+              Contactar a MAYAM
+              <i data-lucide="arrow-right" style={{ width: 16, height: 16 }}></i>
+            </a>
+            <button onClick={onClose} className="btn btn-secondary">
+              Seguir leyendo
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes mayam-fade-in { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes mayam-pop-in {
+          from { opacity: 0; transform: translateY(18px) scale(0.97); }
+          to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @media (max-width: 900px) {
+          .blog-modal-inner { grid-template-columns: 1fr !important; max-height: 92vh; overflow-y: auto; }
+          .blog-modal-inner > div:first-child { min-height: 280px !important; }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+/* ── Search + Filters ── */
+function SearchBar({ query, onQuery, activeCategory, onCategory, allCategories = [] }) {
+  useEffect(() => { if (window.lucide) window.lucide.createIcons(); }, []);
+  const inputRef = useRef(null);
+
+  return (
+    <div style={{
+      background: 'rgba(248,249,252,0.85)',
+      backdropFilter: 'blur(16px)',
+      WebkitBackdropFilter: 'blur(16px)',
+      borderBottom: '1px solid var(--border)',
+      padding: '24px 0',
+    }}>
+      <div className="container">
+        <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
+          {/* Input */}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 10,
+            flex: '1 1 260px',
+            background: '#fff',
+            border: '1px solid var(--border-strong)',
+            borderRadius: 12, padding: '11px 16px',
+            boxShadow: 'var(--shadow-xs)',
+            transition: 'border-color 150ms, box-shadow 150ms',
+          }}
+            onClick={() => inputRef.current && inputRef.current.focus()}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 10,
+              flex: '1 1 260px',
+              background: '#fff',
+              border: '1px solid var(--border-strong)',
+              borderRadius: 12, padding: '11px 16px',
+              boxShadow: 'var(--shadow-xs)',
+            }}
+          >
+            <i data-lucide="search" style={{ width: 16, height: 16, color: 'var(--fg-muted)', flexShrink: 0 }}></i>
+            <input
+              ref={inputRef}
+              type="text"
+              placeholder="Buscar por palabra clave…"
+              value={query}
+              onChange={e => onQuery(e.target.value)}
+              style={{
+                border: 'none', outline: 'none', background: 'transparent',
+                fontSize: 14, color: 'var(--fg-strong)',
+                fontFamily: 'var(--font-sans)', width: '100%',
+              }}
+            />
+            {query && (
+              <button
+                onClick={() => onQuery('')}
+                style={{ border: 'none', background: 'transparent', cursor: 'pointer', padding: 0, display: 'flex', color: 'var(--fg-muted)' }}
+                aria-label="Limpiar búsqueda"
+              >
+                <i data-lucide="x" style={{ width: 14, height: 14 }}></i>
+              </button>
+            )}
+          </div>
+
+          {/* Category chips */}
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+            <span style={{ fontSize: 12, color: 'var(--fg-muted)', fontWeight: 500, whiteSpace: 'nowrap' }}>Filtrar:</span>
+            {allCategories.map(cat => (
+              <button
+                key={cat}
+                onClick={() => onCategory(cat === activeCategory ? 'Todos' : cat)}
+                style={{
+                  border: cat === activeCategory ? '1.5px solid var(--mayam-blue)' : '1.5px solid var(--border-strong)',
+                  background: cat === activeCategory ? 'var(--mayam-blue)' : '#fff',
+                  color: cat === activeCategory ? '#fff' : 'var(--fg-strong)',
+                  borderRadius: 999, padding: '7px 14px',
+                  fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                  fontFamily: 'var(--font-sans)',
+                  transition: 'all 150ms',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── Blog Hero ── */
+function BlogHero() {
+  useEffect(() => { if (window.lucide) window.lucide.createIcons(); }, []);
+  const ShaderBg = window.ShaderBackground;
+  return (
+    <section style={{
+      background: 'var(--mayam-blue)',
+      color: '#fff', position: 'relative', overflow: 'hidden',
+      padding: '80px 0 100px', cursor: 'pointer',
+    }}>
+      {ShaderBg && <ShaderBg />}
+      <div className="y-decoration" style={{ right: '-8rem', top: '-4rem', fontSize: '40rem', color: '#fff', opacity: 0.06 }}>Y</div>
+      <div className="container" style={{ position: 'relative' }}>
+        <span style={{
+          display: 'inline-flex', alignItems: 'center', gap: 8,
+          padding: '6px 14px', borderRadius: 999,
+          background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)',
+          fontSize: 12, fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase',
+          marginBottom: 28,
+        }}>
+          <i data-lucide="pen-line" style={{ width: 14, height: 14 }}></i> Blog MAYAM
+        </span>
+        <h1 style={{
+          fontSize: 'clamp(36px, 5.5vw, 78px)', lineHeight: 1.02, letterSpacing: '-0.025em',
+          fontWeight: 600, color: '#fff', margin: '0 0 20px 0', maxWidth: 900,
+        }}>
+          Perspectivas sobre <span style={{ fontStyle: 'italic', fontWeight: 400, opacity: 0.9 }}>inteligencia artificial</span> y estrategia.
+        </h1>
+        <p style={{ fontSize: 19, color: 'rgba(255,255,255,0.85)', lineHeight: 1.55, margin: 0, maxWidth: 660 }}>
+          Análisis y tendencias del ecosistema de IA escritos por el equipo MAYAM para líderes empresariales y profesionales del sector tecnológico.
+        </p>
+      </div>
+    </section>
+  );
+}
+
+/* ── Blog Card ── */
+function BlogCard({ post, featured, onOpen }) {
+  useEffect(() => { if (window.lucide) window.lucide.createIcons(); });
+
+  if (featured) {
+    return (
+      <article
+        onClick={() => onOpen(post)}
+        tabIndex={0}
+        role="button"
+        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpen(post); } }}
+        className="blog-card-featured"
+        style={{
+          display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0,
+          background: '#fff', border: '1px solid var(--border)',
+          borderRadius: 20, overflow: 'hidden',
+          boxShadow: 'var(--shadow-md)', cursor: 'pointer',
+          transition: 'box-shadow 200ms, transform 200ms',
+        }}
+      >
+        <div style={{ position: 'relative', overflow: 'hidden', minHeight: 360 }}>
+          <img
+            src={post.image} alt={post.title}
+            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transition: 'transform 350ms' }}
+            onError={e => { e.target.style.display = 'none'; e.target.parentNode.style.background = 'var(--neutral-100)'; }}
+          />
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(0,90,191,0.10) 0%, transparent 60%)' }} />
+        </div>
+        <div style={{ padding: '44px 44px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+          <div style={{ marginBottom: 18 }}>
+            <CategoryBadge label={post.category} icon={post.categoryIcon} />
+          </div>
+          <h2 style={{ fontSize: 'clamp(20px, 2.2vw, 28px)', fontWeight: 600, lineHeight: 1.2, letterSpacing: '-0.015em', color: 'var(--neutral-900)', margin: '0 0 14px 0' }}>
+            {post.title}
+          </h2>
+          <p style={{ fontSize: 15, color: 'var(--fg-muted)', lineHeight: 1.65, margin: '0 0 30px 0' }}>
+            {post.excerpt}
+          </p>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <AuthorAvatar name={post.author} size={40} />
+              <div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--neutral-800)' }}>{post.author}</div>
+                <div style={{ fontSize: 12, color: 'var(--fg-muted)', marginTop: 2 }}>{post.date} · {post.readTime}</div>
+              </div>
+            </div>
+            <span className="read-more-link" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 14, fontWeight: 600, color: 'var(--mayam-blue)' }}>
+              Leer artículo <i data-lucide="arrow-right" style={{ width: 15, height: 15 }}></i>
+            </span>
+          </div>
+        </div>
+      </article>
+    );
+  }
+
+  return (
+    <article
+      onClick={() => onOpen(post)}
+      tabIndex={0}
+      role="button"
+      onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpen(post); } }}
+      className="blog-card"
+      style={{
+        background: '#fff', border: '1px solid var(--border)',
+        borderRadius: 16, overflow: 'hidden',
+        display: 'flex', flexDirection: 'column',
+        cursor: 'pointer',
+        transition: 'box-shadow 200ms, transform 200ms',
+      }}
+    >
+      <div style={{ position: 'relative', overflow: 'hidden', height: 220 }}>
+        <img
+          src={post.image} alt={post.title}
+          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transition: 'transform 350ms' }}
+          onError={e => { e.target.style.display = 'none'; e.target.parentNode.style.background = 'var(--neutral-100)'; }}
+        />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(15,17,20,0.25) 0%, transparent 50%)' }} />
+      </div>
+      <div style={{ padding: '26px 26px 30px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+        <div style={{ marginBottom: 14 }}>
+          <CategoryBadge label={post.category} icon={post.categoryIcon} />
+        </div>
+        <h3 style={{ fontSize: 19, fontWeight: 600, lineHeight: 1.25, letterSpacing: '-0.01em', color: 'var(--neutral-900)', margin: '0 0 10px 0', flex: 1 }}>
+          {post.title}
+        </h3>
+        <p style={{ fontSize: 14, color: 'var(--fg-muted)', lineHeight: 1.65, margin: '0 0 22px 0' }}>
+          {post.excerpt}
+        </p>
+        <div style={{ borderTop: '1px solid var(--border)', paddingTop: 18, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <AuthorAvatar name={post.author} size={34} />
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--neutral-800)' }}>{post.author}</div>
+              <div style={{ fontSize: 11, color: 'var(--fg-muted)', marginTop: 1 }}>{post.date} · {post.readTime}</div>
+            </div>
+          </div>
+          <span className="read-more-link" style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 13, fontWeight: 600, color: 'var(--mayam-blue)' }}>
+            Leer <i data-lucide="arrow-right" style={{ width: 14, height: 14 }}></i>
+          </span>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+/* ── Blog Grid (con estado + fetch Supabase) ── */
+function BlogSection() {
+  const [openPost, setOpenPost] = useState(null);
+  const [query, setQuery] = useState('');
+  const [activeCategory, setActiveCategory] = useState('Todos');
+  const [posts, setPosts] = useState(FALLBACK_POSTS);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    sb.from('blog_posts')
+      .select('*')
+      .eq('status', 'published')
+      .order('published_at', { ascending: false })
+      .then(({ data }) => {
+        if (data && data.length > 0) setPosts(data.map(normalizeDbPost));
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
+
+  const ALL_CATEGORIES = ['Todos', ...Array.from(new Set(posts.map(p => p.category)))];
+
+  const filtered = posts.filter(p => {
+    const q = query.toLowerCase();
+    const matchesQuery = !q || p.title.toLowerCase().includes(q) || p.excerpt.toLowerCase().includes(q) || p.category.toLowerCase().includes(q);
+    const matchesCat = activeCategory === 'Todos' || p.category === activeCategory;
+    return matchesQuery && matchesCat;
+  });
+
+  /* El post con featured=true va primero; si no hay, el más reciente */
+  const sortedFiltered = [...filtered].sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
+  const [featured, ...rest] = sortedFiltered;
+
+  return (
+    <>
+      <SearchBar query={query} onQuery={setQuery} activeCategory={activeCategory} onCategory={setActiveCategory} allCategories={ALL_CATEGORIES} />
+
+      <section className="section">
+        <div className="container">
+          {loading ? (
+            <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--fg-muted)' }}>
+              <div style={{ fontSize: 36, marginBottom: 12 }}>⏳</div>
+              <p style={{ fontSize: 15 }}>Cargando artículos…</p>
+            </div>
+          ) : filtered.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--fg-muted)' }}>
+              <div style={{ fontSize: 48, marginBottom: 16 }}>🔍</div>
+              <h3 style={{ fontSize: 20, fontWeight: 600, color: 'var(--neutral-700)', marginBottom: 8 }}>Sin resultados</h3>
+              <p style={{ fontSize: 15 }}>
+                No encontramos artículos con "{query}". Intenta con otra palabra clave.
+              </p>
+              <button
+                onClick={() => { setQuery(''); setActiveCategory('Todos'); }}
+                className="btn btn-secondary"
+                style={{ marginTop: 24 }}
+              >
+                Limpiar filtros
+              </button>
+            </div>
+          ) : (
+            <div>
+              {featured && (
+                <div style={{ marginBottom: 48 }}>
+                  <BlogCard post={featured} featured onOpen={setOpenPost} />
+                </div>
+              )}
+              {rest.length > 0 && (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 28 }}>
+                  {rest.map(post => <BlogCard key={post.id} post={post} onOpen={setOpenPost} />)}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </section>
+
+      <BlogModal post={openPost} onClose={() => setOpenPost(null)} />
+    </>
+  );
+}
+
+const NEWSLETTER_URL = 'https://script.google.com/macros/s/AKfycbwa3bed3F5X7SYgQDby2nY1PZRQbUl8NjW4HR-KtkcTsghdfbCffcOWjDuTh89OyCxwOQ/exec';
+
+/* ── Newsletter ── */
+function NewsletterBlog() {
+  const [email,  setEmail]  = React.useState('');
+  const [status, setStatus] = React.useState('idle'); // idle | loading | done
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    setStatus('loading');
+    try {
+      const res  = await fetch(NEWSLETTER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ email, source: 'blog' }).toString(),
+      });
+      const data = await res.json();
+      setStatus(data.status === 'duplicate' ? 'duplicate' : 'done');
+    } catch (_) {
+      setStatus('done');
+    }
+  };
+
+  return (
+    <section style={{ background: 'var(--neutral-050)', borderTop: '1px solid var(--border)', padding: '72px 0' }}>
+      <div className="container" style={{ maxWidth: 680, textAlign: 'center' }}>
+        <span className="eyebrow" style={{ marginBottom: 16, display: 'block' }}>Mantente al tanto</span>
+        <h2 style={{ fontSize: 'clamp(24px, 3.5vw, 38px)', fontWeight: 600, letterSpacing: '-0.015em', margin: '0 0 14px 0' }}>
+          Nuevos artículos directo a tu correo
+        </h2>
+        <p style={{ fontSize: 16, color: 'var(--fg-muted)', lineHeight: 1.6, margin: '0 0 34px 0' }}>
+          Publicamos análisis sobre IA, estrategia y liderazgo tecnológico. Sin spam, solo contenido que vale tu tiempo.
+        </p>
+        {status === 'done' || status === 'duplicate' ? (
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: 12,
+            padding: '16px 28px', borderRadius: 12,
+            background: status === 'duplicate' ? 'var(--neutral-050)' : 'var(--blue-050)',
+            border: `1px solid ${status === 'duplicate' ? 'var(--border)' : 'var(--blue-100)'}`,
+          }}>
+            <div style={{
+              width: 34, height: 34, borderRadius: '50%',
+              background: status === 'duplicate' ? 'var(--fg-muted)' : 'var(--mayam-blue)',
+              color: '#fff', display: 'grid', placeItems: 'center', flexShrink: 0,
+            }}>
+              <i data-lucide={status === 'duplicate' ? 'info' : 'check'} style={{ width: 17, height: 17, strokeWidth: 2.5 }}></i>
+            </div>
+            <span style={{ fontSize: 16, fontWeight: 600, color: status === 'duplicate' ? 'var(--fg-strong)' : 'var(--mayam-blue)' }}>
+              {status === 'duplicate'
+                ? 'Este correo ya está suscrito.'
+                : '¡Listo! Te avisamos con cada artículo nuevo.'}
+            </span>
+          </div>
+        ) : (
+          <form onSubmit={onSubmit} style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
+            <input
+              type="email"
+              placeholder="tu@empresa.com"
+              value={email} onChange={e => setEmail(e.target.value)}
+              required disabled={status === 'loading'}
+              style={{
+                flex: '1 1 260px', padding: '13px 18px', borderRadius: 10,
+                border: '1px solid var(--border-strong)', fontSize: 15,
+                outline: 'none', fontFamily: 'var(--font-sans)', color: 'var(--fg-strong)',
+                opacity: status === 'loading' ? 0.6 : 1,
+              }}
+            />
+            <button type="submit" className="btn btn-primary" style={{ whiteSpace: 'nowrap' }} disabled={status === 'loading'}>
+              {status === 'loading' ? 'Enviando…' : 'Suscribirme'}
+            </button>
+          </form>
+        )}
+      </div>
+    </section>
+  );
+}
+
+/* ── Page ── */
+function Page() {
+  useEffect(() => { if (window.lucide) window.lucide.createIcons(); }, []);
+  return (
+    <>
+      <Header active="blog.html" />
+      <main>
+        <BlogHero />
+        <BlogSection />
+        <NewsletterBlog />
+      </main>
+      <Footer />
+      <WhatsAppFloat />
+      <style>{`
+        .blog-card, .blog-card-featured { cursor: pointer; }
+        .blog-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-3px); }
+        .blog-card-featured:hover { box-shadow: var(--shadow-xl); transform: translateY(-2px); }
+        .blog-card:hover img, .blog-card-featured:hover img { transform: scale(1.03); }
+        .read-more-link:hover { color: var(--blue-700); text-decoration: none; }
+        @media (max-width: 860px) {
+          .blog-card-featured { grid-template-columns: 1fr !important; }
+          .blog-card-featured > div:first-child { min-height: 260px !important; }
+        }
+      `}</style>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<Page />);
+</script>
+</body>
+</html>

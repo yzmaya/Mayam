@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Maquila de video con IA · MAYAM</title>
+  <meta name="description" content="Pipeline de producción audiovisual con IA generativa para agencias, productoras y marcas." />
+  <link rel="stylesheet" href="assets/base.css" />
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+
+<script type="text/babel" src="components/Shared.jsx"></script>
+<script type="text/babel" src="components/ShaderBg.jsx"></script>
+<script type="text/babel" src="components/Service.jsx"></script>
+<script type="text/babel" src="components/Admin.jsx"></script>
+
+<script type="text/babel">
+const SUPABASE_URL  = 'https://wbujrdnolbdcleejnrft.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndidWpyZG5vbGJkY2xlZWpucmZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3MTUzNTUsImV4cCI6MjA5NTI5MTM1NX0.vkzxEe7tvbXwQOOYGYKEJbsXQ-HOAobxnB-PRxOpkCc';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+const { useEffect, useState } = React;
+function Page() {
+  useEffect(() => { if (window.lucide) window.lucide.createIcons(); });
+  const [layout, setLayout] = useState(() => localStorage.getItem('mayam-projects-layout') || 'grid');
+  const [projects, setProjects] = useState(null);
+  useEffect(() => { localStorage.setItem('mayam-projects-layout', layout); }, [layout]);
+
+  useEffect(() => {
+    sb.from('agent_projects')
+      .select('*')
+      .eq('service', 'maquila-video')
+      .eq('status', 'published')
+      .order('sort_order', { ascending: true })
+      .then(({ data }) => {
+        if (data && data.length > 0)
+          setProjects(data.map((p, idx) => ({ ...p, idx, metricLabel: p.metric_label || '' })));
+        else
+          setProjects(makeProjects('maquila-video', 6));
+      });
+  }, []);
+
+  const displayProjects = projects || makeProjects('maquila-video', 6);
+
+  return (
+    <>
+      <Header active="maquila-video.html" />
+      <main>
+        <ServiceHero
+          eyebrow="Maquila de video con IA"
+          icon="video"
+          title="Producción audiovisual"
+          titleAccent="con IA generativa."
+          description="Somos el aliado técnico de agencias, productoras y casas creativas. Combinamos pipelines de IA generativa con post-producción tradicional para entregar más volumen, en menos tiempo y sin sacrificar craft."
+          bullets={[
+            'Maquila B2B: tu marca al frente, nosotros detrás',
+            'Storyboarding, generación, render y delivery',
+            'Variantes para A/B testing en redes y performance',
+            'Avatares, locución sintética y motion design',
+            'Pipeline auditado: respetamos derechos y likeness',
+          ]}
+        />
+        <ServiceFeatures
+          title="De brief a entrega final"
+          subtitle="Trabajamos como casa productora con stack IA. Coordinamos, ejecutamos y entregamos masters listos para publicar."
+          features={[
+            { icon: 'pen-tool', title: 'Pre-producción', desc: 'Storyboard generado y validado, casting de modelos, paleta visual y guion adaptado al modelo.' },
+            { icon: 'sparkles', title: 'Generación dirigida', desc: 'Veo, Runway, Sora, Kling y modelos propios. Elegimos el correcto por toma, no por moda.' },
+            { icon: 'layers', title: 'Compositing', desc: 'Integramos plates IA con material live-action, retoque de manos, lipsync y continuidad.' },
+            { icon: 'speaker', title: 'Audio y locución', desc: 'Voces sintéticas con licencia, foley, score y mezcla 5.1 cuando lo pide el medio.' },
+            { icon: 'copy', title: 'Variantes a escala', desc: 'Una pieza madre + 30 cortes para performance. Idiomas, ratios y CTAs distintos.' },
+            { icon: 'shield', title: 'Compliance creativo', desc: 'Verificación de derechos, watermarking C2PA y trazabilidad para tu legal y tu cliente.' },
+          ]}
+        />
+        <ProjectsSection projects={displayProjects} layout={layout} setLayout={setLayout} />
+      </main>
+      <Footer />
+      <WhatsAppFloat />
+      <AdminProjectPanel sb={sb} service="maquila-video" onProjectsChange={setProjects} showVideo={true} />
+    </>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<Page />);
+</script>
+</body>
+</html>

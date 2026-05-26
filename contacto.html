@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Contacto · MAYAM</title>
+  <meta name="description" content="Habla con MAYAM. Diagnósticos sin costo, llamadas exploratorias y propuestas a medida." />
+  <link rel="stylesheet" href="assets/base.css" />
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<script type="text/babel" src="components/Shared.jsx"></script>
+<script type="text/babel" src="components/ShaderBg.jsx"></script>
+
+<script type="text/babel">
+const { useEffect, useState } = React;
+
+const CONTACT_URL = 'https://script.google.com/macros/s/AKfycbwa3bed3F5X7SYgQDby2nY1PZRQbUl8NjW4HR-KtkcTsghdfbCffcOWjDuTh89OyCxwOQ/exec';
+
+function ContactForm() {
+  useEffect(() => { if (window.lucide) window.lucide.createIcons(); }, []);
+  const [form, setForm] = useState({ name: '', email: '', company: '', size: '', interest: 'agentes-whatsapp', message: '' });
+  const [status, setStatus] = useState('idle'); // idle | loading | done
+
+  const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }));
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    setStatus('loading');
+    try {
+      await fetch(CONTACT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ type: 'contact', ...form }).toString(),
+      });
+    } catch (_) {}
+    setStatus('done');
+  };
+
+  if (status === 'done') {
+    return (
+      <div style={{
+        background: 'var(--blue-050)', border: '1px solid var(--blue-100)',
+        borderRadius: 16, padding: 40, textAlign: 'center',
+      }}>
+        <div style={{
+          width: 56, height: 56, borderRadius: '50%',
+          background: 'var(--mayam-blue)', color: '#fff', margin: '0 auto 20px',
+          display: 'grid', placeItems: 'center',
+        }}>
+          <i data-lucide="check" style={{ width: 28, height: 28, strokeWidth: 2.5 }}></i>
+        </div>
+        <h3 style={{ margin: '0 0 8px 0', fontSize: 24, fontWeight: 600, letterSpacing: '-0.01em' }}>Recibido. Gracias.</h3>
+        <p style={{ margin: 0, fontSize: 16, color: 'var(--fg-muted)', lineHeight: 1.55 }}>
+          Te respondemos en menos de 24 horas hábiles. Si es urgente, escríbenos por WhatsApp.
+        </p>
+      </div>
+    );
+  }
+
+  const disabled = status === 'loading';
+  return (
+    <form onSubmit={onSubmit} style={{
+      background: '#fff', border: '1px solid var(--border)', borderRadius: 16, padding: 40,
+      display: 'flex', flexDirection: 'column', gap: 20,
+    }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }} className="contact-row">
+        <Field label="Nombre" required>
+          <input required value={form.name} onChange={set('name')} placeholder="Tu nombre" disabled={disabled} />
+        </Field>
+        <Field label="Email corporativo" required>
+          <input required type="email" value={form.email} onChange={set('email')} placeholder="tu@empresa.com" disabled={disabled} />
+        </Field>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 16 }} className="contact-row">
+        <Field label="Empresa" required>
+          <input required value={form.company} onChange={set('company')} placeholder="Razón social o marca" disabled={disabled} />
+        </Field>
+        <Field label="Tamaño del equipo">
+          <select value={form.size} onChange={set('size')} disabled={disabled}>
+            <option value="">Selecciona…</option>
+            <option>1–20 personas</option>
+            <option>21–100</option>
+            <option>101–500</option>
+            <option>500+</option>
+          </select>
+        </Field>
+      </div>
+      <Field label="¿En qué te podemos ayudar?">
+        <select value={form.interest} onChange={set('interest')} disabled={disabled}>
+          <option value="agentes-whatsapp">Agentes para WhatsApp</option>
+          <option value="capacitacion">Capacitación corporativa</option>
+          <option value="maquila-video">Maquila de video con IA</option>
+          <option value="consultoria">Consultoría estratégica</option>
+          <option value="otro">Otro / aún no lo sé</option>
+        </select>
+      </Field>
+      <Field label="Cuéntanos un poco" required>
+        <textarea required value={form.message} onChange={set('message')} rows={4} placeholder="¿Qué problema quieres resolver? ¿Qué has probado antes?" disabled={disabled} />
+      </Field>
+      <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap', marginTop: 4 }}>
+        <button type="submit" className="btn btn-primary" disabled={disabled}>
+          {disabled ? 'Enviando…' : 'Enviar mensaje'}
+        </button>
+        <span style={{ fontSize: 13, color: 'var(--fg-muted)' }}>Respondemos en menos de 24h hábiles.</span>
+      </div>
+      <style>{`
+        form input, form select, form textarea {
+          width: 100%; padding: 12px 14px; border: 1px solid var(--border);
+          border-radius: 10px; font-size: 15px; font-family: inherit; background: #fff;
+          color: var(--fg-strong); transition: border-color 150ms;
+        }
+        form input:focus, form select:focus, form textarea:focus {
+          outline: none; border-color: var(--mayam-blue); box-shadow: 0 0 0 3px var(--blue-050);
+        }
+        form textarea { resize: vertical; }
+        @media (max-width: 599px) { .contact-row { grid-template-columns: 1fr !important; } }
+      `}</style>
+    </form>
+  );
+}
+
+function Field({ label, required, children }) {
+  return (
+    <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+      <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--fg-muted)' }}>
+        {label}{required && <span style={{ color: 'var(--mayam-blue)', marginLeft: 4 }}>*</span>}
+      </span>
+      {children}
+    </label>
+  );
+}
+
+function ContactInfo() {
+  useEffect(() => { if (window.lucide) window.lucide.createIcons(); }, []);
+  const items = [
+    { icon: 'message-circle', label: 'WhatsApp', value: 'Habla con un experto', href: 'https://wa.me/525500000000', sub: 'Respuesta en horario laboral' },
+    { icon: 'mail', label: 'Email', value: 'hola@mayam.mx', href: 'mailto:hola@mayam.mx', sub: 'Para propuestas y RFP' },
+    { icon: 'map-pin', label: 'Oficina', value: 'Villa Cacama 18', href: null, sub: 'Villa de Aragón, Gustavo A. Madero,\n07570 Ciudad de México, CDMX' },
+    { icon: 'clock', label: 'Horario', value: 'Lun–Vie · 9:00 a 19:00', href: null, sub: 'Hora del centro de México' },
+  ];
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+      {items.map((it, i) => (
+        <div key={i} style={{
+          display: 'flex', gap: 18, padding: '20px 0',
+          borderBottom: i < items.length - 1 ? '1px solid var(--border)' : 'none',
+        }}>
+          <div style={{
+            width: 44, height: 44, borderRadius: 10,
+            background: 'var(--blue-050)', color: 'var(--mayam-blue)',
+            display: 'grid', placeItems: 'center', flexShrink: 0,
+          }}>
+            <i data-lucide={it.icon} style={{ width: 20, height: 20 }}></i>
+          </div>
+          <div>
+            <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--fg-muted)', marginBottom: 4 }}>{it.label}</div>
+            {it.href
+              ? <a href={it.href} style={{ fontSize: 18, fontWeight: 600, color: 'var(--neutral-900)', textDecoration: 'none' }}>{it.value}</a>
+              : <div style={{ fontSize: 18, fontWeight: 600, color: 'var(--neutral-900)' }}>{it.value}</div>
+            }
+            {it.sub && <div style={{ fontSize: 13, color: 'var(--fg-muted)', marginTop: 4, whiteSpace: 'pre-line', lineHeight: 1.5 }}>{it.sub}</div>}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ContactHero() {
+  const ShaderBg = window.ShaderBackground;
+  return (
+    <section style={{ background: 'var(--mayam-blue)', color: '#fff', position: 'relative', overflow: 'hidden', padding: '80px 0 100px', cursor: 'pointer' }}>
+      {ShaderBg && <ShaderBg />}
+      <div className="y-decoration" style={{ right: '-10rem', top: '-6rem', fontSize: '40rem', color: '#fff', opacity: 0.06 }}>Y</div>
+      <div className="container" style={{ position: 'relative' }}>
+        <span style={{
+          display: 'inline-flex', alignItems: 'center', gap: 8,
+          padding: '6px 14px', borderRadius: 999,
+          background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)',
+          fontSize: 12, fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase',
+          marginBottom: 28,
+        }}>Contacto</span>
+        <h1 style={{
+          fontSize: 'clamp(40px, 6vw, 80px)', lineHeight: 1.02, letterSpacing: '-0.025em',
+          fontWeight: 600, color: '#fff', margin: '0 0 20px 0', maxWidth: 900,
+        }}>
+          Hablemos de cómo <span style={{ fontStyle: 'italic', fontWeight: 400, opacity: 0.9 }}>la IA</span> puede trabajar para ti.
+        </h1>
+        <p style={{ fontSize: 20, color: 'rgba(255,255,255,0.85)', margin: 0, maxWidth: 680, lineHeight: 1.55 }}>
+          Diagnóstico inicial sin compromiso. Te leemos, hacemos preguntas y, si tiene sentido, te mandamos una propuesta concreta.
+        </p>
+      </div>
+    </section>
+  );
+}
+
+function ContactBody() {
+  return (
+    <section className="section">
+      <div className="container">
+        <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: 64, alignItems: 'start' }} className="contact-grid">
+          <ContactForm />
+          <ContactInfo />
+        </div>
+      </div>
+      <style>{`@media (max-width: 899px) { .contact-grid { grid-template-columns: 1fr !important; gap: 40px !important; } }`}</style>
+    </section>
+  );
+}
+
+function Page() {
+  return (
+    <>
+      <Header active="contacto.html" />
+      <main>
+        <ContactHero />
+        <ContactBody />
+      </main>
+      <Footer />
+      <WhatsAppFloat />
+    </>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<Page />);
+</script>
+</body>
+</html>

@@ -1,0 +1,1398 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Editor de Blog · MAYAM</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="stylesheet" href="assets/base.css" />
+  <style>
+    body { background: var(--neutral-050); }
+    .editor-layout { display: grid; grid-template-columns: 1fr 340px; gap: 24px; align-items: start; }
+    @media (max-width: 1100px) { .editor-layout { grid-template-columns: 1fr; } }
+    .sidebar-panel { background: #fff; border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+    .sidebar-section { padding: 20px; border-bottom: 1px solid var(--border); }
+    .sidebar-section:last-child { border-bottom: none; }
+    .sidebar-label { font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-muted); margin-bottom: 8px; display: block; }
+    .field-input { width: 100%; border: 1px solid var(--border-strong); border-radius: 8px; padding: 9px 12px; font-size: 13px; font-family: var(--font-sans); color: var(--fg-strong); outline: none; box-sizing: border-box; }
+    .field-input:focus { border-color: var(--mayam-blue); box-shadow: 0 0 0 3px rgba(0,90,191,0.08); }
+    textarea.field-input { resize: vertical; }
+    .block-item { background: #fff; border: 1px solid var(--border); border-radius: 12px; margin-bottom: 10px; }
+    .block-handle { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--neutral-050); border-radius: 12px 12px 0 0; }
+    .block-body { padding: 16px; }
+    .tag-chip { display: inline-flex; align-items: center; gap: 5px; background: var(--blue-050); color: var(--mayam-blue); border: 1px solid var(--blue-100); border-radius: 999px; padding: 4px 10px; font-size: 12px; font-weight: 600; }
+    .kw-chip { display: inline-flex; align-items: center; gap: 4px; background: var(--neutral-050); color: var(--neutral-700); border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px 9px; font-size: 11px; font-weight: 600; }
+    .toggle-btn { display: inline-flex; width: 44px; height: 24px; border-radius: 999px; border: none; cursor: pointer; padding: 2px; align-items: center; transition: background 200ms; }
+    .toggle-knob { width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.2); transition: transform 200ms; }
+    .status-badge { display: inline-flex; align-items: center; gap: 5px; border-radius: 999px; padding: 4px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; }
+    .btn-icon { width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border); background: #fff; cursor: pointer; display: grid; place-items: center; color: var(--fg-muted); transition: all 150ms; }
+    .btn-icon:hover { border-color: var(--border-strong); color: var(--fg-strong); }
+    .btn-icon.danger:hover { border-color: #fca5a5; background: #fef2f2; color: #dc2626; }
+    .post-row { display: grid; grid-template-columns: 1fr auto auto auto; gap: 16px; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--border); transition: background 150ms; cursor: pointer; }
+    .post-row:last-child { border-bottom: none; }
+    .post-row:hover { background: var(--neutral-050); }
+    @keyframes mayam-fade-in { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes mayam-pop-in { from { opacity: 0; transform: translateY(16px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<script type="text/babel">
+/* ═══════════════════════════════════════════════════
+   CONFIG & SUPABASE
+═══════════════════════════════════════════════════ */
+const SUPABASE_URL  = 'https://wbujrdnolbdcleejnrft.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndidWpyZG5vbGJkY2xlZWpucmZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3MTUzNTUsImV4cCI6MjA5NTI5MTM1NX0.vkzxEe7tvbXwQOOYGYKEJbsXQ-HOAobxnB-PRxOpkCc';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+const { useState, useEffect, useRef, useCallback } = React;
+
+/* ═══════════════════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════════════════ */
+const CATEGORIES = ['IA & Legal','Herramientas de IA','Liderazgo & Ética','Estrategia','Casos de Uso','General'];
+const CATEGORY_ICONS = { 'IA & Legal':'scale','Herramientas de IA':'cpu','Liderazgo & Ética':'heart-handshake','Estrategia':'compass','Casos de Uso':'briefcase','General':'file-text' };
+const BULLET_ICONS = ['scale','trending-up','clock','alert-circle','zap','brain','rocket','globe','shield-check','bar-chart-2','cpu','heart-handshake','users','target','lightbulb','check-circle','star','award','layers','building','arrow-right','flag'];
+
+const STOPWORDS = new Set(['de','la','el','en','y','a','los','las','del','un','una','por','con','para','es','se','su','que','al','lo','le','si','no','más','pero','sobre','también','este','esta','como','ha','fue','the','of','and','to','a','in','is','it','that','for','with','are','was','has','its','he','she','we','our','their','they','have','been','will','can','an','at','this','from','or','but','by','not','who','what','when','where','how','all','one','your','his','her','had','were','do','did','which','about','if','into','than','then','these','those','so','would','could','should','may','might','us','me','my','you','any','out','up','more','most','such','some','other','new','after','first','also','only','very','than','same','time','way','each','two','number','get','use','make','like','know','take','see','come','think','look','want','give','find','tell','ask','seem','feel','try','leave','call','keep','let','begin','show','hear','play','run','move','live','believe','hold','bring','happen','write','provide','sit','stand','lose','pay','meet','include','continue','set','learn','change','lead','understand','watch','follow','stop','create','speak','read','spend','grow','open','walk','win','offer','remember','love','consider','appear','buy','wait','serve','die','send','expect','build','stay','fall','cut','reach','kill','remain']);
+
+function generateSlug(title) {
+  return title.toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim().replace(/\s+/g, '-').replace(/-+/g, '-')
+    .slice(0, 80);
+}
+
+function calcReadTime(content) {
+  const text = (content || []).map(b => {
+    if (b.type === 'bullets') return (b.items || []).map(i => (i.label || '') + ' ' + (i.text || '')).join(' ');
+    return b.text || '';
+  }).join(' ');
+  return Math.max(1, Math.ceil(text.split(/\s+/).filter(Boolean).length / 200));
+}
+
+function extractKeywords(title, excerpt, content, category) {
+  const raw = [title, excerpt, category, ...(content || []).map(b => {
+    if (b.type === 'bullets') return (b.items || []).map(i => i.label + ' ' + i.text).join(' ');
+    return b.text || '';
+  })].join(' ').toLowerCase();
+  const words = raw.match(/\b[a-záéíóúñü]{4,}\b/gi) || [];
+  const freq = {};
+  words.forEach(w => { if (!STOPWORDS.has(w)) freq[w] = (freq[w] || 0) + 1; });
+  return Object.entries(freq).sort((a,b) => b[1]-a[1]).slice(0,15).map(([w]) => w);
+}
+
+function useLucide(deps=[]) {
+  useEffect(() => { if (window.lucide) window.lucide.createIcons(); }, deps);
+}
+
+/* ═══════════════════════════════════════════════════
+   ICONO LUCIDE
+═══════════════════════════════════════════════════ */
+function Icon({ name, size=16, style={} }) {
+  useLucide([name]);
+  return <i data-lucide={name} style={{ width: size, height: size, ...style }}></i>;
+}
+
+/* ═══════════════════════════════════════════════════
+   TOGGLE SWITCH
+═══════════════════════════════════════════════════ */
+function Toggle({ value, onChange, label }) {
+  return (
+    <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
+      <button
+        type="button"
+        className="toggle-btn"
+        onClick={() => onChange(!value)}
+        style={{ background: value ? 'var(--mayam-blue)' : 'var(--neutral-300)' }}
+        role="switch" aria-checked={value}
+      >
+        <div className="toggle-knob" style={{ transform: value ? 'translateX(20px)' : 'translateX(0)' }} />
+      </button>
+      <span style={{ fontSize: 13, color: 'var(--fg-strong)', fontWeight: 500 }}>{label}</span>
+    </label>
+  );
+}
+
+/* ═══════════════════════════════════════════════════
+   HEADER EDITOR
+═══════════════════════════════════════════════════ */
+function EditorHeader({ user, onSignOut, onNewPost, view, section, onSectionChange }) {
+  useLucide([view, section]);
+  return (
+    <header style={{
+      background: 'rgba(248,249,252,0.85)', backdropFilter: 'saturate(200%) blur(20px)',
+      WebkitBackdropFilter: 'saturate(200%) blur(20px)',
+      borderBottom: '1px solid var(--border)', position: 'sticky', top: 0, zIndex: 50,
+    }}>
+      <div style={{ maxWidth: 1400, margin: '0 auto', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 60, gap: 16 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <a href="index.html"><img src="assets/logo-primary.png" alt="MAYAM" style={{ height: 28 }} /></a>
+          <span style={{ color: 'var(--border-strong)' }}>|</span>
+          <div style={{ display: 'flex', background: 'var(--neutral-100)', borderRadius: 8, padding: 3, gap: 2 }}>
+            {[
+              { v: 'blog',             label: 'Blog'         },
+              { v: 'agentes-whatsapp', label: 'WhatsApp'     },
+              { v: 'capacitacion',     label: 'Capacitación' },
+              { v: 'maquila-video',    label: 'Video'        },
+              { v: 'consultoria',      label: 'Consultoría'  },
+            ].map(tab => (
+              <button key={tab.v} onClick={() => onSectionChange(tab.v)} style={{
+                padding: '5px 14px', borderRadius: 6, border: 'none', cursor: 'pointer',
+                fontFamily: 'var(--font-sans)', fontSize: 13, fontWeight: 600,
+                background: section === tab.v ? '#fff' : 'transparent',
+                color: section === tab.v ? 'var(--mayam-blue)' : 'var(--fg-muted)',
+                boxShadow: section === tab.v ? 'var(--shadow-sm)' : 'none',
+                transition: 'all 150ms',
+              }}>{tab.label}</button>
+            ))}
+          </div>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          {(view === 'list' || view === 'projects-list') && (
+            <button onClick={onNewPost} className="btn btn-primary" style={{ padding: '8px 16px', fontSize: 13 }}>
+              <Icon name="plus" size={15} /> {{ blog:'Nueva nota', 'agentes-whatsapp':'Nuevo agente', capacitacion:'Nueva capacitación', 'maquila-video':'Nuevo video', consultoria:'Nueva consultoría' }[section] || 'Nuevo proyecto'}
+            </button>
+          )}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--blue-100)', color: 'var(--mayam-blue)', display: 'grid', placeItems: 'center', fontSize: 13, fontWeight: 600 }}>
+              {(user?.user_metadata?.full_name || user?.email || 'U')[0].toUpperCase()}
+            </div>
+            <span style={{ fontSize: 13, color: 'var(--fg-muted)', maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {user?.user_metadata?.full_name || user?.email}
+            </span>
+          </div>
+          <button onClick={onSignOut} className="btn-icon" title="Cerrar sesión">
+            <Icon name="log-out" size={15} />
+          </button>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+/* ═══════════════════════════════════════════════════
+   LOGIN VIEW
+═══════════════════════════════════════════════════ */
+function LoginView({ onLogin }) {
+  useLucide();
+  const [email, setEmail] = useState('');
+  const [pass, setPass] = useState('');
+  const [show, setShow] = useState(false);
+  const [err, setErr] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  async function handleLogin(e) {
+    e.preventDefault();
+    setErr(''); setLoading(true);
+    const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+    setLoading(false);
+    if (error) { setErr(error.message === 'Invalid login credentials' ? 'Correo o contraseña incorrectos.' : error.message); }
+    else { onLogin(data.user); }
+  }
+
+  return (
+    <div style={{ minHeight: '100vh', background: 'var(--mayam-blue)', display: 'grid', placeItems: 'center', padding: '24px', position: 'relative', overflow: 'hidden' }}>
+      <div className="y-decoration" style={{ right: '-8rem', bottom: '-4rem', fontSize: '34rem', color: '#fff', opacity: 0.05 }}>Y</div>
+      <div style={{ width: '100%', maxWidth: 420, position: 'relative' }}>
+        <div style={{ background: '#fff', borderRadius: 22, padding: '44px', boxShadow: '0 40px 80px rgba(0,0,0,0.25)' }}>
+          <div style={{ textAlign: 'center', marginBottom: 36 }}>
+            <img src="assets/logo-primary.png" alt="MAYAM" style={{ height: 32, margin: '0 auto 18px' }} />
+            <h1 style={{ fontSize: 24, fontWeight: 600, margin: '0 0 6px 0', letterSpacing: '-0.015em' }}>Editor de Blog</h1>
+            <p style={{ fontSize: 13, color: 'var(--fg-muted)', margin: 0 }}>Acceso solo para el equipo MAYAM</p>
+          </div>
+          <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <div>
+              <label style={{ fontSize: 13, fontWeight: 600, color: 'var(--neutral-700)', marginBottom: 6, display: 'block' }}>Correo electrónico</label>
+              <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="nombre@mayam.mx" required className="field-input" style={{ fontSize: 14 }} />
+            </div>
+            <div>
+              <label style={{ fontSize: 13, fontWeight: 600, color: 'var(--neutral-700)', marginBottom: 6, display: 'block' }}>Contraseña</label>
+              <div style={{ position: 'relative' }}>
+                <input type={show ? 'text' : 'password'} value={pass} onChange={e => setPass(e.target.value)} placeholder="Tu contraseña" required className="field-input" style={{ fontSize: 14, paddingRight: 40 }} />
+                <button type="button" onClick={() => setShow(s => !s)} style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--fg-muted)' }}>
+                  <Icon name={show ? 'eye-off' : 'eye'} />
+                </button>
+              </div>
+            </div>
+            {err && <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 8, padding: '10px 14px', fontSize: 13, color: '#dc2626' }}>{err}</div>}
+            <button type="submit" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '13px', marginTop: 4 }} disabled={loading}>
+              {loading ? 'Entrando…' : 'Iniciar sesión'}
+            </button>
+          </form>
+          <div style={{ borderTop: '1px solid var(--border)', marginTop: 24, paddingTop: 18, textAlign: 'center', fontSize: 13, color: 'var(--fg-muted)' }}>
+            ¿Cuenta nueva?{' '}<a href="gestor.html" style={{ fontWeight: 600 }}>Crear cuenta</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════
+   STATUS BADGE (shared)
+═══════════════════════════════════════════════════ */
+function StatusBadge({ status }) {
+  const cfg = {
+    published: { bg: '#dcfce7', color: '#15803d', label: 'Publicado' },
+    draft:     { bg: 'var(--neutral-100)', color: 'var(--fg-muted)', label: 'Borrador' },
+    archived:  { bg: '#fef3c7', color: '#b45309', label: 'Archivado' },
+  }[status] || {};
+  return <span className="status-badge" style={{ background: cfg.bg, color: cfg.color }}>{cfg.label}</span>;
+}
+
+/* ═══════════════════════════════════════════════════
+   POST LIST VIEW
+═══════════════════════════════════════════════════ */
+function PostListView({ posts, onEdit, onDelete, onTogglePublish, onToggleFeatured }) {
+  useLucide([posts.length]);
+  const [search, setSearch] = useState('');
+  const [filter, setFilter] = useState('all');
+
+  const visible = posts.filter(p => {
+    const q = search.toLowerCase();
+    const matchQ = !q || p.title.toLowerCase().includes(q) || p.category.toLowerCase().includes(q);
+    const matchF = filter === 'all' || p.status === filter;
+    return matchQ && matchF;
+  });
+
+  const stats = {
+    total: posts.length,
+    published: posts.filter(p => p.status === 'published').length,
+    draft: posts.filter(p => p.status === 'draft').length,
+  };
+
+  return (
+    <div style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 24px' }}>
+      {/* Stats */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 32 }}>
+        {[
+          { label: 'Total de notas', value: stats.total, icon: 'file-text' },
+          { label: 'Publicadas', value: stats.published, icon: 'globe' },
+          { label: 'Borradores', value: stats.draft, icon: 'file' },
+        ].map(s => (
+          <div key={s.label} style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 14, padding: '20px 24px', display: 'flex', alignItems: 'center', gap: 16 }}>
+            <div style={{ width: 44, height: 44, borderRadius: 10, background: 'var(--blue-050)', color: 'var(--mayam-blue)', display: 'grid', placeItems: 'center' }}>
+              <Icon name={s.icon} size={20} />
+            </div>
+            <div>
+              <div style={{ fontSize: 28, fontWeight: 600, color: 'var(--neutral-900)', lineHeight: 1 }}>{s.value}</div>
+              <div style={{ fontSize: 12, color: 'var(--fg-muted)', marginTop: 4 }}>{s.label}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Buscador y filtros */}
+      <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 14, overflow: 'hidden' }}>
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)', display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: '1 1 220px', border: '1px solid var(--border-strong)', borderRadius: 8, padding: '8px 12px', background: 'var(--neutral-050)' }}>
+            <Icon name="search" size={15} style={{ color: 'var(--fg-muted)' }} />
+            <input type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar nota…" style={{ border: 'none', background: 'transparent', outline: 'none', fontSize: 13, fontFamily: 'var(--font-sans)', width: '100%', color: 'var(--fg-strong)' }} />
+          </div>
+          {['all','published','draft'].map(f => (
+            <button key={f} onClick={() => setFilter(f)} style={{ border: '1px solid', borderColor: filter === f ? 'var(--mayam-blue)' : 'var(--border-strong)', background: filter === f ? 'var(--mayam-blue)' : '#fff', color: filter === f ? '#fff' : 'var(--fg-muted)', borderRadius: 999, padding: '7px 14px', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>
+              {{ all: 'Todas', published: 'Publicadas', draft: 'Borradores' }[f]}
+            </button>
+          ))}
+        </div>
+
+        {visible.length === 0 ? (
+          <div style={{ padding: '60px 24px', textAlign: 'center', color: 'var(--fg-muted)' }}>
+            <Icon name="file-x" size={40} style={{ margin: '0 auto 16px', display: 'block' }} />
+            <p style={{ margin: 0 }}>{search ? 'No se encontraron notas.' : 'No hay notas aún. Crea la primera.'}</p>
+          </div>
+        ) : visible.map(p => (
+          <div key={p.id} className="post-row" onClick={() => onEdit(p)}>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--mayam-blue)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{p.category}</span>
+                {p.featured && <span style={{ fontSize: 10, fontWeight: 700, color: '#b45309', background: '#fef3c7', borderRadius: 999, padding: '2px 7px' }}>DESTACADO</span>}
+              </div>
+              <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--neutral-900)', lineHeight: 1.3 }}>{p.title}</div>
+              <div style={{ fontSize: 12, color: 'var(--fg-muted)', marginTop: 4 }}>
+                {p.author_name} · {p.read_time_minutes} min · {p.published_at ? new Date(p.published_at).toLocaleDateString('es-MX', { day:'numeric', month:'short', year:'numeric' }) : 'Sin publicar'}
+              </div>
+            </div>
+            <StatusBadge status={p.status} />
+            <div style={{ display: 'flex', gap: 6 }} onClick={e => e.stopPropagation()}>
+              <button className="btn-icon" title={p.status === 'published' ? 'Despublicar' : 'Publicar'} onClick={() => onTogglePublish(p)}>
+                <Icon name={p.status === 'published' ? 'eye-off' : 'globe'} size={14} />
+              </button>
+              <button className="btn-icon" title={p.featured ? 'Quitar destacado' : 'Destacar'} onClick={() => onToggleFeatured(p)} style={{ color: p.featured ? '#b45309' : 'var(--fg-muted)' }}>
+                <Icon name="star" size={14} />
+              </button>
+              <button className="btn-icon danger" title="Eliminar" onClick={() => onDelete(p)}>
+                <Icon name="trash-2" size={14} />
+              </button>
+            </div>
+            <button className="btn btn-secondary" style={{ fontSize: 12, padding: '6px 14px' }} onClick={() => onEdit(p)}>
+              Editar
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════
+   BLOCK EDITOR
+═══════════════════════════════════════════════════ */
+function BlockEditor({ blocks, onChange }) {
+  useLucide([blocks]);
+
+  function update(i, data) { const b = [...blocks]; b[i] = { ...b[i], ...data }; onChange(b); }
+  function remove(i) { onChange(blocks.filter((_, j) => j !== i)); }
+  function move(i, dir) {
+    const b = [...blocks];
+    const j = i + dir;
+    if (j < 0 || j >= b.length) return;
+    [b[i], b[j]] = [b[j], b[i]]; onChange(b);
+  }
+  function addBlock(type) {
+    const defaults = {
+      lead: { type: 'lead', text: '' },
+      paragraph: { type: 'paragraph', text: '' },
+      subheading: { type: 'subheading', text: '' },
+      question: { type: 'question', text: '' },
+      bullets: { type: 'bullets', items: [{ icon: 'check-circle', label: '', text: '' }] },
+    };
+    onChange([...blocks, defaults[type]]);
+  }
+
+  const BLOCK_LABELS = { lead:'Párrafo de apertura', paragraph:'Párrafo', subheading:'Subtítulo', question:'Pregunta / CTA', bullets:'Lista de puntos' };
+  const BLOCK_ICONS  = { lead:'align-left', paragraph:'type', subheading:'heading-2', question:'message-square', bullets:'list' };
+
+  return (
+    <div>
+      {blocks.map((block, i) => (
+        <div key={i} className="block-item">
+          <div className="block-handle">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <Icon name={BLOCK_ICONS[block.type] || 'square'} size={14} style={{ color: 'var(--mayam-blue)' }} />
+              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--fg-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{BLOCK_LABELS[block.type]}</span>
+            </div>
+            <div style={{ display: 'flex', gap: 4 }}>
+              <button className="btn-icon" onClick={() => move(i,-1)} disabled={i===0} title="Subir"><Icon name="chevron-up" size={14}/></button>
+              <button className="btn-icon" onClick={() => move(i,1)} disabled={i===blocks.length-1} title="Bajar"><Icon name="chevron-down" size={14}/></button>
+              <button className="btn-icon danger" onClick={() => remove(i)} title="Eliminar bloque"><Icon name="trash-2" size={14}/></button>
+            </div>
+          </div>
+          <div className="block-body">
+            {(block.type === 'lead' || block.type === 'paragraph' || block.type === 'question') && (
+              <textarea
+                className="field-input"
+                rows={block.type === 'lead' ? 4 : 3}
+                value={block.text}
+                onChange={e => update(i, { text: e.target.value })}
+                placeholder={{ lead:'Párrafo de apertura del artículo…', paragraph:'Escribe el párrafo…', question:'Pregunta de reflexión o CTA para el lector…' }[block.type]}
+              />
+            )}
+            {block.type === 'subheading' && (
+              <input
+                className="field-input"
+                type="text"
+                value={block.text}
+                onChange={e => update(i, { text: e.target.value })}
+                placeholder="Escribe el subtítulo…"
+              />
+            )}
+            {block.type === 'bullets' && (
+              <div>
+                {(block.items || []).map((item, j) => (
+                  <div key={j} style={{ display: 'grid', gridTemplateColumns: '130px 1fr auto', gap: 8, marginBottom: 10, alignItems: 'start' }}>
+                    <div>
+                      <div style={{ fontSize: 11, color: 'var(--fg-muted)', marginBottom: 4 }}>Ícono + Etiqueta</div>
+                      <select
+                        className="field-input"
+                        value={item.icon}
+                        onChange={e => { const items=[...block.items]; items[j]={...items[j],icon:e.target.value}; update(i,{items}); }}
+                        style={{ marginBottom: 6 }}
+                      >
+                        {BULLET_ICONS.map(ic => <option key={ic} value={ic}>{ic}</option>)}
+                      </select>
+                      <input
+                        className="field-input"
+                        type="text"
+                        value={item.label}
+                        onChange={e => { const items=[...block.items]; items[j]={...items[j],label:e.target.value}; update(i,{items}); }}
+                        placeholder="Etiqueta del punto"
+                      />
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 11, color: 'var(--fg-muted)', marginBottom: 4 }}>Descripción</div>
+                      <textarea
+                        className="field-input"
+                        rows={3}
+                        value={item.text}
+                        onChange={e => { const items=[...block.items]; items[j]={...items[j],text:e.target.value}; update(i,{items}); }}
+                        placeholder="Descripción del punto…"
+                      />
+                    </div>
+                    <div style={{ paddingTop: 22 }}>
+                      <button className="btn-icon danger" onClick={() => { const items=block.items.filter((_,k)=>k!==j); update(i,{items}); }} disabled={block.items.length<=1} title="Eliminar punto"><Icon name="x" size={13}/></button>
+                    </div>
+                  </div>
+                ))}
+                <button onClick={() => { const items=[...block.items, {icon:'check-circle',label:'',text:''}]; update(i,{items}); }} style={{ fontSize: 12, color: 'var(--mayam-blue)', background: 'none', border: '1px dashed var(--blue-200)', borderRadius: 8, padding: '8px 14px', cursor: 'pointer', fontFamily: 'var(--font-sans)', fontWeight: 600 }}>
+                  + Agregar punto
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      ))}
+
+      {/* Add block buttons */}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
+        <span style={{ fontSize: 11, color: 'var(--fg-muted)', fontWeight: 600, alignSelf: 'center' }}>AGREGAR BLOQUE:</span>
+        {Object.entries(BLOCK_LABELS).map(([type, label]) => (
+          <button key={type} onClick={() => addBlock(type)} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12, fontWeight: 600, color: 'var(--neutral-700)', background: '#fff', border: '1px solid var(--border-strong)', borderRadius: 8, padding: '6px 12px', cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>
+            <Icon name={BLOCK_ICONS[type]} size={12} /> {label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════
+   SIDEBAR PANEL
+═══════════════════════════════════════════════════ */
+function Sidebar({ form, setForm, keywords, onSave, onPublish, saving, isNew }) {
+  useLucide([form.status, form.featured, form.category]);
+
+  const field = (k, label, opts={}) => (
+    <div style={{ marginBottom: 12 }}>
+      <label className="sidebar-label">{label}</label>
+      {opts.textarea
+        ? <textarea className="field-input" rows={opts.rows||3} value={form[k]} onChange={e => setForm(f=>({...f,[k]:e.target.value}))} placeholder={opts.placeholder||''} />
+        : opts.select
+          ? <select className="field-input" value={form[k]} onChange={e => setForm(f=>({...f,[k]:e.target.value}))}>
+              {opts.options.map(o => <option key={o} value={o}>{o}</option>)}
+            </select>
+          : <input type={opts.type||'text'} className="field-input" value={form[k]} onChange={e => setForm(f=>({...f,[k]:e.target.value}))} placeholder={opts.placeholder||''} />
+      }
+    </div>
+  );
+
+  return (
+    <div style={{ position: 'sticky', top: 80 }}>
+      {/* Guardar / Publicar */}
+      <div className="sidebar-panel" style={{ marginBottom: 16 }}>
+        <div className="sidebar-section">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <button onClick={onSave} className="btn btn-secondary" style={{ justifyContent: 'center', width: '100%' }} disabled={saving}>
+              <Icon name="save" size={14} /> {saving ? 'Guardando…' : 'Guardar borrador'}
+            </button>
+            <button onClick={onPublish} className="btn btn-primary" style={{ justifyContent: 'center', width: '100%' }} disabled={saving}>
+              <Icon name="globe" size={14} /> {form.status === 'published' ? 'Actualizar' : 'Publicar'}
+            </button>
+          </div>
+          <div style={{ marginTop: 14 }}>
+            <Toggle value={form.featured} onChange={v => setForm(f=>({...f,featured:v}))} label="Nota destacada (portada)" />
+          </div>
+        </div>
+      </div>
+
+      {/* Configuración */}
+      <div className="sidebar-panel" style={{ marginBottom: 16 }}>
+        <div className="sidebar-section" style={{ background: 'var(--neutral-050)' }}>
+          <span className="sidebar-label" style={{ marginBottom: 0 }}>Configuración</span>
+        </div>
+        <div className="sidebar-section">
+          {field('author_name', 'Autor', { placeholder: 'Nombre del autor' })}
+          {field('category', 'Categoría', { select: true, options: CATEGORIES })}
+          {field('image_url', 'URL de imagen de portada', { placeholder: 'https://…' })}
+          {form.image_url && (
+            <img src={form.image_url} alt="preview" style={{ width: '100%', height: 120, objectFit: 'cover', borderRadius: 8, marginTop: 8 }}
+              onError={e => { e.target.style.display='none'; }} />
+          )}
+          {field('tags_raw', 'Tags (separados por coma)', { placeholder: 'IA, estrategia, México' })}
+        </div>
+      </div>
+
+      {/* SEO */}
+      <div className="sidebar-panel" style={{ marginBottom: 16 }}>
+        <div className="sidebar-section" style={{ background: 'var(--blue-050)' }}>
+          <span className="sidebar-label" style={{ marginBottom: 0, color: 'var(--mayam-blue)' }}>SEO — Posicionamiento</span>
+        </div>
+        <div className="sidebar-section">
+          {field('meta_title', 'Título SEO', { placeholder: 'Título para buscadores (55-60 chars)' })}
+          <div style={{ fontSize: 11, color: form.meta_title?.length > 60 ? '#dc2626' : 'var(--fg-muted)', marginTop: -8, marginBottom: 12 }}>
+            {form.meta_title?.length || 0}/60 caracteres
+          </div>
+          {field('meta_description', 'Meta descripción', { textarea: true, rows: 3, placeholder: 'Descripción para buscadores (150-160 chars)' })}
+          <div style={{ fontSize: 11, color: form.meta_description?.length > 160 ? '#dc2626' : 'var(--fg-muted)', marginTop: -8, marginBottom: 12 }}>
+            {form.meta_description?.length || 0}/160 caracteres
+          </div>
+          <div>
+            <label className="sidebar-label">Palabras clave (auto-extraídas)</label>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+              {keywords.map(kw => (
+                <span key={kw} className="kw-chip">{kw}</span>
+              ))}
+              {keywords.length === 0 && <span style={{ fontSize: 12, color: 'var(--fg-muted)' }}>Se generarán al guardar</span>}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* GEO */}
+      <div className="sidebar-panel">
+        <div className="sidebar-section" style={{ background: 'var(--neutral-050)' }}>
+          <span className="sidebar-label" style={{ marginBottom: 0 }}>GEO — SEO Local</span>
+        </div>
+        <div className="sidebar-section">
+          {field('geo_region', 'Región (ISO 3166)', { placeholder: 'MX' })}
+          {field('geo_placename', 'Lugar', { placeholder: 'Ciudad de México, México' })}
+          {field('geo_position', 'Coordenadas (lat,lng)', { placeholder: '19.4326,-99.1332' })}
+          <p style={{ fontSize: 11, color: 'var(--fg-muted)', margin: 0, lineHeight: 1.5 }}>
+            Estas coordenadas ayudan a posicionar el contenido en búsquedas locales.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════
+   EDITOR PREVIEW MODAL
+═══════════════════════════════════════════════════ */
+function renderBlocks(content) {
+  if (!Array.isArray(content) || content.length === 0) {
+    return <p style={{ color: 'var(--fg-muted)', fontStyle: 'italic', fontSize: 14 }}>Sin contenido aún.</p>;
+  }
+  return content.map((block, i) => {
+    if (block.type === 'lead') return (
+      <p key={i} style={{ fontSize: 16, lineHeight: 1.75, color: 'var(--fg)', margin: '0 0 20px 0', fontWeight: 400 }}>{block.text}</p>
+    );
+    if (block.type === 'paragraph') return (
+      <p key={i} style={{ fontSize: 15, lineHeight: 1.7, color: 'var(--fg)', margin: '0 0 16px 0' }}>{block.text}</p>
+    );
+    if (block.type === 'subheading') return (
+      <h3 key={i} style={{ fontSize: 13, fontWeight: 600, color: 'var(--neutral-700)', margin: '24px 0 12px 0', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{block.text}</h3>
+    );
+    if (block.type === 'question') return (
+      <div key={i} style={{ borderLeft: '3px solid var(--mayam-blue)', paddingLeft: 18, margin: '24px 0 0 0', color: 'var(--fg-strong)', fontSize: 15, lineHeight: 1.65, fontStyle: 'italic' }}>
+        {block.text}
+      </div>
+    );
+    if (block.type === 'bullets') return (
+      <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 12, margin: '0 0 20px 0' }}>
+        {(block.items || []).map((item, j) => (
+          <div key={j} style={{ display: 'flex', gap: 12, alignItems: 'flex-start', padding: '14px 16px', borderRadius: 10, background: 'var(--neutral-050)', border: '1px solid var(--border)' }}>
+            <div style={{ width: 32, height: 32, borderRadius: 7, flexShrink: 0, background: 'var(--blue-050)', color: 'var(--mayam-blue)', display: 'grid', placeItems: 'center' }}>
+              <i data-lucide={item.icon || 'check-circle'} style={{ width: 15, height: 15 }}></i>
+            </div>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--neutral-800)', marginBottom: 3 }}>{item.label}</div>
+              <div style={{ fontSize: 13, color: 'var(--fg-muted)', lineHeight: 1.55 }}>{item.text}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+    return null;
+  });
+}
+
+function EditorPreviewModal({ form, keywords, onClose }) {
+  useEffect(() => {
+    function onKey(e) { if (e.key === 'Escape') onClose(); }
+    document.addEventListener('keydown', onKey);
+    document.body.style.overflow = 'hidden';
+    return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = ''; };
+  }, []);
+  useEffect(() => { if (window.lucide) window.lucide.createIcons(); });
+
+  const displayDate = form.published_at
+    ? new Date(form.published_at).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' })
+    : new Date().toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' });
+  const rt = calcReadTime(form.content);
+
+  return (
+    <div
+      onClick={onClose}
+      style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(10,18,36,0.65)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', display: 'grid', placeItems: 'center', padding: 24, animation: 'mayam-fade-in 180ms ease' }}
+    >
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{ width: '100%', maxWidth: 1060, maxHeight: '92vh', background: '#fff', borderRadius: 20, overflow: 'hidden', display: 'grid', gridTemplateColumns: '380px 1fr', boxShadow: '0 40px 90px rgba(0,0,0,0.38)', animation: 'mayam-pop-in 260ms cubic-bezier(0.2,0,0,1.05)' }}
+        className="preview-modal-inner"
+      >
+        {/* Izquierda: imagen + meta */}
+        <div style={{ position: 'relative', overflow: 'hidden', minHeight: 460, background: 'var(--blue-900)' }}>
+          {form.image_url
+            ? <img src={form.image_url} alt={form.title} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} onError={e => { e.target.style.display='none'; }} />
+            : <div style={{ width: '100%', height: '100%', display: 'grid', placeItems: 'center' }}><svg viewBox="0 0 200 200" width="40%" opacity="0.1"><text x="100" y="160" fontSize="180" fontWeight="700" textAnchor="middle" fill="#fff" fontFamily="var(--font-display)">Y</text></svg></div>
+          }
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,28,80,0.90) 0%, rgba(0,28,80,0.15) 55%, transparent 100%)' }} />
+          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: 28 }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--mayam-blue)', background: 'var(--blue-050)', padding: '4px 10px', borderRadius: 999, marginBottom: 12 }}>
+              <i data-lucide={CATEGORY_ICONS[form.category] || 'file-text'} style={{ width: 11, height: 11 }}></i> {form.category}
+            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 4 }}>
+              <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--blue-100)', color: 'var(--mayam-blue)', display: 'grid', placeItems: 'center', fontWeight: 700, fontSize: 14, flexShrink: 0 }}>
+                {(form.author_name || 'A').split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase()}
+              </div>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#fff' }}>{form.author_name}</div>
+                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)', marginTop: 2 }}>{displayDate} · {rt} min de lectura</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Derecha: contenido */}
+        <div style={{ display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
+          {/* Barra superior */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 32px', borderBottom: '1px solid var(--border)', position: 'sticky', top: 0, background: '#fff', zIndex: 2 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--mayam-blue)' }}>Vista previa</span>
+              <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 999, background: form.status === 'published' ? '#dcfce7' : '#fef3c7', color: form.status === 'published' ? '#15803d' : '#b45309', fontWeight: 600 }}>
+                {form.status === 'published' ? 'Publicado' : 'Borrador'}
+              </span>
+            </div>
+            <button onClick={onClose} style={{ width: 34, height: 34, borderRadius: '50%', border: '1px solid var(--border)', background: '#fff', cursor: 'pointer', display: 'grid', placeItems: 'center', color: 'var(--fg-muted)' }}>
+              <i data-lucide="x" style={{ width: 16, height: 16 }}></i>
+            </button>
+          </div>
+
+          {/* Artículo */}
+          <div style={{ padding: '28px 32px 20px', flex: 1 }}>
+            {form.title
+              ? <h2 style={{ fontSize: 'clamp(20px,2vw,26px)', fontWeight: 600, lineHeight: 1.2, letterSpacing: '-0.015em', color: 'var(--neutral-900)', margin: '0 0 24px 0' }}>{form.title}</h2>
+              : <p style={{ color: '#dc2626', fontSize: 14, fontWeight: 600, margin: '0 0 16px 0' }}>⚠️ Falta el título</p>
+            }
+            {renderBlocks(form.content)}
+          </div>
+
+          {/* SEO preview */}
+          {(form.meta_title || form.meta_description) && (
+            <div style={{ margin: '0 32px 8px', padding: '14px 16px', background: 'var(--neutral-050)', border: '1px solid var(--border)', borderRadius: 10 }}>
+              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--fg-muted)', marginBottom: 6 }}>Vista en buscador (Google)</div>
+              <div style={{ fontSize: 17, color: '#1a0dab', fontWeight: 400, marginBottom: 2, fontFamily: 'Arial, sans-serif' }}>{form.meta_title || form.title}</div>
+              <div style={{ fontSize: 12, color: '#006621', marginBottom: 4, fontFamily: 'Arial, sans-serif' }}>mayam.mx › blog › {form.slug || '...'}</div>
+              <div style={{ fontSize: 13, color: '#545454', lineHeight: 1.4, fontFamily: 'Arial, sans-serif' }}>{form.meta_description || form.excerpt}</div>
+            </div>
+          )}
+
+          {/* Keywords */}
+          {keywords.length > 0 && (
+            <div style={{ padding: '12px 32px 24px' }}>
+              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--fg-muted)', marginBottom: 8 }}>Keywords SEO detectadas</div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+                {keywords.map(kw => <span key={kw} style={{ fontSize: 11, fontWeight: 600, background: 'var(--blue-050)', color: 'var(--mayam-blue)', border: '1px solid var(--blue-100)', borderRadius: 999, padding: '3px 9px' }}>{kw}</span>)}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <style>{`
+        @media (max-width: 860px) {
+          .preview-modal-inner { grid-template-columns: 1fr !important; }
+          .preview-modal-inner > div:first-child { min-height: 220px !important; }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════
+   POST EDITOR VIEW
+═══════════════════════════════════════════════════ */
+function emptyPost() {
+  return {
+    title: '', slug: '', excerpt: '', content: [],
+    author_name: 'Gibrán Torreblanca',
+    category: 'General', category_icon: 'file-text',
+    image_url: '', status: 'draft', featured: false,
+    tags_raw: '', read_time_minutes: 3,
+    meta_title: '', meta_description: '',
+    meta_keywords: [],
+    og_image: '',
+    geo_region: 'MX', geo_placename: 'Ciudad de México, México', geo_position: '19.4326,-99.1332',
+    published_at: null,
+  };
+}
+
+function PostEditorView({ post, user, onBack, onSaved }) {
+  const [form, setForm] = useState(() => {
+    if (!post) return emptyPost();
+    return {
+      ...emptyPost(), ...post,
+      tags_raw: (post.tags || []).join(', '),
+      content: post.content || [],
+    };
+  });
+  const [saving, setSaving] = useState(false);
+  const [saveMsg, setSaveMsg] = useState('');
+  const [keywords, setKeywords] = useState(post?.meta_keywords || []);
+  const [showPreview, setShowPreview] = useState(false);
+
+  useLucide([form.status, form.featured]);
+
+  // Auto-slug desde título
+  useEffect(() => {
+    if (!post && form.title) {
+      setForm(f => ({ ...f, slug: generateSlug(f.title) }));
+    }
+  }, [form.title]);
+
+  // Auto-extract keywords
+  useEffect(() => {
+    const kw = extractKeywords(form.title, form.excerpt, form.content, form.category);
+    setKeywords(kw);
+    setForm(f => ({ ...f, meta_keywords: kw, category_icon: CATEGORY_ICONS[f.category] || 'file-text' }));
+  }, [form.title, form.excerpt, form.content, form.category]);
+
+  // Auto meta_title y meta_description si están vacíos
+  useEffect(() => {
+    if (!form.meta_title && form.title) setForm(f => ({ ...f, meta_title: f.title.slice(0, 60) }));
+  }, [form.title]);
+  useEffect(() => {
+    if (!form.meta_description && form.excerpt) setForm(f => ({ ...f, meta_description: f.excerpt.slice(0, 160) }));
+  }, [form.excerpt]);
+
+  async function save(publish=false) {
+    if (!form.title.trim()) {
+      setSaveMsg('⚠️ El título es obligatorio antes de guardar.');
+      setTimeout(() => setSaveMsg(''), 3500);
+      return;
+    }
+    if (!form.excerpt.trim()) {
+      setSaveMsg('⚠️ El extracto/resumen es obligatorio.');
+      setTimeout(() => setSaveMsg(''), 3500);
+      return;
+    }
+    setSaving(true); setSaveMsg('');
+    const tags = form.tags_raw.split(',').map(t => t.trim()).filter(Boolean);
+    const rt = calcReadTime(form.content);
+    const payload = {
+      title: form.title,
+      slug: form.slug || generateSlug(form.title),
+      excerpt: form.excerpt,
+      content: form.content,
+      author_name: form.author_name,
+      author_id: user?.id || null,
+      category: form.category,
+      category_icon: CATEGORY_ICONS[form.category] || 'file-text',
+      image_url: form.image_url,
+      status: publish ? 'published' : form.status,
+      featured: form.featured,
+      tags,
+      read_time_minutes: rt,
+      meta_title: form.meta_title || form.title.slice(0,60),
+      meta_description: form.meta_description || form.excerpt?.slice(0,160),
+      meta_keywords: keywords,
+      og_image: form.og_image || form.image_url,
+      geo_region: form.geo_region,
+      geo_placename: form.geo_placename,
+      geo_position: form.geo_position,
+      published_at: publish && !form.published_at ? new Date().toISOString() : form.published_at,
+    };
+
+    let error;
+    if (post?.id) {
+      ({ error } = await sb.from('blog_posts').update(payload).eq('id', post.id));
+    } else {
+      ({ error } = await sb.from('blog_posts').insert(payload));
+    }
+
+    setSaving(false);
+    if (error) {
+      setSaveMsg('Error: ' + error.message);
+    } else {
+      setSaveMsg(publish ? '¡Publicado!' : 'Guardado como borrador');
+      setForm(f => ({ ...f, status: publish ? 'published' : f.status, read_time_minutes: rt }));
+      setTimeout(() => { setSaveMsg(''); onSaved(); }, 1500);
+    }
+  }
+
+  return (
+    <div style={{ maxWidth: 1400, margin: '0 auto', padding: '28px 24px' }}>
+      {/* Breadcrumb */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 24, flexWrap: 'wrap' }}>
+        <button onClick={onBack} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', color: 'var(--mayam-blue)', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-sans)', padding: 0 }}>
+          <Icon name="arrow-left" size={15} /> Volver al listado
+        </button>
+        <span style={{ color: 'var(--border-strong)' }}>/</span>
+        <span style={{ fontSize: 13, color: 'var(--fg-muted)' }}>{post?.id ? 'Editar nota' : 'Nueva nota'}</span>
+        {saveMsg && (
+          <span style={{
+            fontSize: 13, fontWeight: 600, marginLeft: 4, padding: '4px 10px', borderRadius: 6,
+            background: saveMsg.startsWith('⚠️') ? '#fef3c7' : saveMsg.startsWith('Error') ? '#fef2f2' : '#dcfce7',
+            color: saveMsg.startsWith('⚠️') ? '#b45309' : saveMsg.startsWith('Error') ? '#dc2626' : '#15803d',
+          }}>{saveMsg}</span>
+        )}
+        <button
+          onClick={() => setShowPreview(true)}
+          style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 6, background: '#fff', border: '1px solid var(--border-strong)', borderRadius: 8, padding: '7px 14px', fontSize: 13, fontWeight: 600, color: 'var(--fg-strong)', cursor: 'pointer', fontFamily: 'var(--font-sans)' }}
+        >
+          <Icon name="eye" size={14} /> Vista previa
+        </button>
+      </div>
+
+      {showPreview && <EditorPreviewModal form={form} keywords={keywords} onClose={() => setShowPreview(false)} />}
+
+      <div className="editor-layout">
+        {/* Main */}
+        <div>
+          {/* Título */}
+          <div style={{ marginBottom: 20 }}>
+            <textarea
+              value={form.title}
+              onChange={e => setForm(f=>({...f, title: e.target.value}))}
+              placeholder="Título de la nota…"
+              style={{ width: '100%', border: 'none', outline: 'none', fontSize: 'clamp(24px,3vw,38px)', fontWeight: 600, fontFamily: 'var(--font-display)', letterSpacing: '-0.02em', lineHeight: 1.2, resize: 'none', background: 'transparent', color: 'var(--neutral-900)', padding: 0, boxSizing: 'border-box' }}
+              rows={2}
+            />
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 8, flexWrap: 'wrap' }}>
+              <span style={{ fontSize: 12, color: 'var(--fg-muted)', fontWeight: 500 }}>Slug:</span>
+              <input
+                type="text"
+                value={form.slug}
+                onChange={e => setForm(f=>({...f, slug: e.target.value}))}
+                style={{ fontSize: 12, color: 'var(--mayam-blue)', background: 'none', border: '1px solid var(--border)', borderRadius: 6, padding: '3px 8px', fontFamily: 'var(--font-mono)', flex: '1 1 200px', maxWidth: 400 }}
+              />
+              <span style={{ fontSize: 12, color: 'var(--fg-muted)' }}>· {calcReadTime(form.content)} min de lectura</span>
+            </div>
+          </div>
+
+          {/* Extracto */}
+          <div style={{ marginBottom: 24, background: '#fff', border: '1px solid var(--border)', borderRadius: 12, padding: '16px 18px' }}>
+            <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-muted)', textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: 8 }}>Extracto / Resumen</label>
+            <textarea
+              className="field-input"
+              rows={3}
+              value={form.excerpt}
+              onChange={e => setForm(f=>({...f, excerpt: e.target.value}))}
+              placeholder="Resumen breve que aparecerá en la tarjeta del blog…"
+              style={{ border: 'none', padding: 0, resize: 'vertical', fontSize: 15, lineHeight: 1.6 }}
+            />
+          </div>
+
+          {/* Bloques */}
+          <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 14, padding: '24px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
+              <Icon name="layout-list" size={16} style={{ color: 'var(--mayam-blue)' }} />
+              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--neutral-700)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Contenido del artículo</span>
+            </div>
+            <BlockEditor blocks={form.content} onChange={c => setForm(f=>({...f, content: c}))} />
+          </div>
+        </div>
+
+        {/* Sidebar */}
+        <Sidebar
+          form={form} setForm={setForm} keywords={keywords}
+          onSave={() => save(false)} onPublish={() => save(true)}
+          saving={saving} isNew={!post?.id}
+        />
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════
+   AGENT PROJECTS — constantes y helpers
+═══════════════════════════════════════════════════ */
+const INDUSTRIES = ['Networking','Seguros','Bienes raíces','Automotriz','Servicios','Retail','Salud','Logística','Banca','Manufactura','Gobierno','Educación','Hotelería','Otro'];
+
+function emptyProject(service = 'agentes-whatsapp') {
+  return { title:'', client:'', industry:'Networking', summary:'', metric:'', metric_label:'', image_url:'', video_url:'', service, status:'draft', sort_order:0 };
+}
+
+const SEED_PROJECTS = [
+  { service:'agentes-whatsapp', industry:'Networking',    client:'BNI México',                title:'BNITO Agente 24/7',              summary:'Atiende las necesidades de los networkers en México.',         metric:'−82%',    metric_label:'tiempo de respuesta',   status:'published', sort_order:0 },
+  { service:'agentes-whatsapp', industry:'Seguros',       client:'Aseguradora placeholder',   title:'Bot de cotización y siniestros', summary:'Lee fotos, genera cotizaciones y abre folios.',               metric:'4.2×',    metric_label:'leads cualificados',    status:'published', sort_order:1 },
+  { service:'agentes-whatsapp', industry:'Bienes raíces', client:'Inmobiliaria placeholder',  title:'Asistente para visitas',         summary:'Pre-califica compradores antes de pasar al asesor.',          metric:'+38%',    metric_label:'cierre de visitas',     status:'published', sort_order:2 },
+  { service:'agentes-whatsapp', industry:'Automotriz',    client:'Concesionaria placeholder', title:'Agente de postventa',            summary:'Recordatorios de servicio, agenda de citas y NPS.',           metric:'+24 NPS', metric_label:'satisfacción',          status:'published', sort_order:3 },
+  { service:'agentes-whatsapp', industry:'Servicios',     client:'Despacho placeholder',      title:'Recepción virtual de casos',     summary:'Captura datos, lee documentos y crea expediente.',            metric:'−65%',    metric_label:'horas administrativas', status:'published', sort_order:4 },
+  { service:'agentes-whatsapp', industry:'Retail',        client:'Tienda placeholder',        title:'Bot omnicanal de pedidos',       summary:'WhatsApp + Instagram con stock y rastreo en vivo.',           metric:'24/7',    metric_label:'cobertura',             status:'published', sort_order:5 },
+  { service:'agentes-whatsapp', industry:'Salud',         client:'Clínica placeholder',       title:'Agendador de citas',             summary:'Triage inicial, confirmación y recordatorios.',               metric:'+52%',    metric_label:'asistencia a citas',    status:'published', sort_order:6 },
+  { service:'agentes-whatsapp', industry:'Logística',     client:'Operador placeholder',      title:'Tracking conversacional',        summary:'Estatus de envíos sin saturar al call center.',               metric:'−80%',    metric_label:'llamadas entrantes',    status:'published', sort_order:7 },
+];
+
+const SEED_CAPACITACION = [
+  { service:'capacitacion', industry:'Banca',       client:'Banco placeholder',      title:'Adopción de Microsoft 365 Copilot', summary:'Programa para 800 colaboradores en 6 meses.',         metric:'92%',       metric_label:'adopción activa',   status:'published', sort_order:0 },
+  { service:'capacitacion', industry:'Manufactura', client:'Planta placeholder',      title:'IA aplicada a operaciones',         summary:'Talleres por turno y AI Coach implant.',               metric:'6 meses',   metric_label:'implant',           status:'published', sort_order:1 },
+  { service:'capacitacion', industry:'Gobierno',    client:'Dependencia placeholder', title:'IA para servidores públicos',       summary:'Conferencias y casos prácticos sectorizados.',         metric:'450',       metric_label:'capacitados',       status:'published', sort_order:2 },
+  { service:'capacitacion', industry:'Educación',   client:'Institución placeholder', title:'Gemini para Workspace',             summary:'Para directivos, docentes y administrativos.',         metric:'3 niveles', metric_label:'contenido',         status:'published', sort_order:3 },
+  { service:'capacitacion', industry:'Despachos',   client:'Firma placeholder',       title:'IA para abogados y contadores',     summary:'Casos reales de su práctica diaria.',                  metric:'+34%',      metric_label:'productividad',     status:'published', sort_order:4 },
+  { service:'capacitacion', industry:'Hotelería',   client:'Cadena placeholder',      title:'IA para áreas comerciales',         summary:'Ventas, marketing y revenue management.',              metric:'8 hoteles', metric_label:'cobertura',         status:'published', sort_order:5 },
+];
+
+const SEED_MAQUILA = [
+  { service:'maquila-video', industry:'Automotriz',        client:'Marca placeholder',     title:'Lanzamiento de modelo 2026',    summary:'Video con IA generativa para campaña digital.',        metric:'14 piezas',  metric_label:'entregadas',        status:'published', sort_order:0 },
+  { service:'maquila-video', industry:'Agencia creativa',  client:'Agencia placeholder',   title:'Render para spot TV',           summary:'Maquila en pipeline IA + post tradicional.',           metric:'−60%',       metric_label:'tiempo producción', status:'published', sort_order:1 },
+  { service:'maquila-video', industry:'Casa productora',   client:'Productora placeholder',title:'Capacitación a equipo interno', summary:'Workshop de IA generativa para video.',                metric:'20 personas',metric_label:'capacitadas',       status:'published', sort_order:2 },
+  { service:'maquila-video', industry:'Automotriz',        client:'Marca placeholder',     title:'Variantes de creatividad',      summary:'36 versiones para A/B en redes.',                      metric:'36×',        metric_label:'variaciones',       status:'published', sort_order:3 },
+  { service:'maquila-video', industry:'Retail',            client:'Cadena placeholder',    title:'Video shoppable',               summary:'Producción para 12 SKUs en redes sociales.',           metric:'12 SKUs',    metric_label:'piezas',            status:'published', sort_order:4 },
+  { service:'maquila-video', industry:'Medios',            client:'Editorial placeholder', title:'Locución y avatar IA',          summary:'Pieza editorial con avatar para podcast visual.',       metric:'8 piezas',   metric_label:'mensuales',         status:'published', sort_order:5 },
+];
+
+const SEED_CONSULTORIA = [
+  { service:'consultoria', industry:'Banca',     client:'Banco placeholder',       title:'Roadmap de IA a 18 meses',    summary:'Selección de stack y marco de gobernanza.',          metric:'18 meses',   metric_label:'roadmap',          status:'published', sort_order:0 },
+  { service:'consultoria', industry:'Seguros',   client:'Aseguradora placeholder', title:'Evaluación ética y técnica',  summary:'Define qué SÍ y qué NO automatizar con IA.',         metric:'12 procesos',metric_label:'analizados',       status:'published', sort_order:1 },
+  { service:'consultoria', industry:'Retail',    client:'Cadena placeholder',      title:'Discovery de casos de uso',   summary:'Workshops por área y matriz de prioridad.',          metric:'8 casos',    metric_label:'priorizados',      status:'published', sort_order:2 },
+  { service:'consultoria', industry:'Logística', client:'Operador placeholder',    title:'Hoja de ruta operativa',      summary:'Antes de automatizar, ordenamos procesos.',          metric:'24 SKUs',    metric_label:'flujo redefinido', status:'published', sort_order:3 },
+  { service:'consultoria', industry:'Salud',     client:'Hospital placeholder',    title:'Gobernanza de datos para IA', summary:'Marco ISO/IEC 42001 aplicado.',                      metric:'ISO 42001',  metric_label:'estándar',         status:'published', sort_order:4 },
+  { service:'consultoria', industry:'Gobierno',  client:'Dependencia placeholder', title:'Evaluación de proveedores',   summary:'Auditoría técnica de stacks propuestos.',             metric:'5 stacks',   metric_label:'evaluados',        status:'published', sort_order:5 },
+];
+
+const SEEDS_BY_SERVICE = {
+  'agentes-whatsapp': SEED_PROJECTS,
+  'capacitacion':     SEED_CAPACITACION,
+  'maquila-video':    SEED_MAQUILA,
+  'consultoria':      SEED_CONSULTORIA,
+};
+
+/* ═══════════════════════════════════════════════════
+   AGENT PROJECTS LIST VIEW
+═══════════════════════════════════════════════════ */
+function AgentProjectsListView({ projects, service, onEdit, onDelete, onTogglePublish, onSeed }) {
+  const [seeding, setSeeding] = useState(false);
+  useLucide([projects.length, seeding]);
+
+  const seedData = SEEDS_BY_SERVICE[service] || [];
+
+  async function handleSeed() {
+    if (!window.confirm(`¿Importar ${seedData.length} proyectos de ejemplo para "${service}"? Se publicarán todos.`)) return;
+    setSeeding(true);
+    const { error } = await sb.from('agent_projects').insert(seedData);
+    setSeeding(false);
+    if (error) { alert('Error al importar: ' + error.message); return; }
+    onSeed();
+  }
+  return (
+    <div style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 24px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 32 }}>
+        {[
+          { label: 'Total de proyectos', value: projects.length, icon: 'briefcase' },
+          { label: 'Publicados', value: projects.filter(p => p.status === 'published').length, icon: 'globe' },
+          { label: 'Borradores', value: projects.filter(p => p.status === 'draft').length, icon: 'file' },
+        ].map(s => (
+          <div key={s.label} style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 14, padding: '20px 24px', display: 'flex', alignItems: 'center', gap: 16 }}>
+            <div style={{ width: 44, height: 44, borderRadius: 10, background: 'var(--blue-050)', color: 'var(--mayam-blue)', display: 'grid', placeItems: 'center' }}>
+              <Icon name={s.icon} size={20} />
+            </div>
+            <div>
+              <div style={{ fontSize: 28, fontWeight: 600, color: 'var(--neutral-900)', lineHeight: 1 }}>{s.value}</div>
+              <div style={{ fontSize: 12, color: 'var(--fg-muted)', marginTop: 4 }}>{s.label}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 14, overflow: 'hidden' }}>
+        {projects.length === 0 ? (
+          <div style={{ padding: '60px 24px', textAlign: 'center', color: 'var(--fg-muted)' }}>
+            <Icon name="briefcase" size={40} style={{ margin: '0 auto 16px', display: 'block' }} />
+            <p style={{ margin: '0 0 20px' }}>No hay proyectos aún. Crea el primero o importa los ejemplos.</p>
+            {seedData.length > 0 && (
+              <button
+                onClick={handleSeed}
+                disabled={seeding}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'var(--mayam-blue)', color: '#fff', border: 'none', borderRadius: 8, padding: '11px 20px', fontSize: 13, fontWeight: 600, cursor: seeding ? 'wait' : 'pointer', opacity: seeding ? 0.7 : 1, fontFamily: 'var(--font-sans)' }}
+              >
+                <Icon name={seeding ? 'loader-circle' : 'database'} size={15} />
+                {seeding ? 'Importando…' : `Importar ${seedData.length} proyectos de ejemplo`}
+              </button>
+            )}
+          </div>
+        ) : projects.map(p => (
+          <div key={p.id} className="post-row" onClick={() => onEdit(p)}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+              <div style={{ width: 60, height: 44, borderRadius: 8, overflow: 'hidden', flexShrink: 0, background: 'linear-gradient(135deg, #005abf, #4d85e0)' }}>
+                {p.image_url && <img src={p.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => { e.target.style.display='none'; }} />}
+              </div>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--mayam-blue)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{p.industry}</span>
+                  {p.video_url && <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', padding: '1px 6px', borderRadius: 999, background: '#fce7f3', color: '#be185d' }}>VIDEO</span>}
+                </div>
+                <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--neutral-900)', lineHeight: 1.3 }}>{p.title}</div>
+                <div style={{ fontSize: 12, color: 'var(--fg-muted)', marginTop: 2 }}>{p.client} · {p.metric} {p.metric_label}</div>
+              </div>
+            </div>
+            <StatusBadge status={p.status} />
+            <div style={{ display: 'flex', gap: 6 }} onClick={e => e.stopPropagation()}>
+              <button className="btn-icon" title={p.status === 'published' ? 'Despublicar' : 'Publicar'} onClick={() => onTogglePublish(p)}>
+                <Icon name={p.status === 'published' ? 'eye-off' : 'globe'} size={14} />
+              </button>
+              <button className="btn-icon danger" title="Eliminar" onClick={() => onDelete(p)}>
+                <Icon name="trash-2" size={14} />
+              </button>
+            </div>
+            <button className="btn btn-secondary" style={{ fontSize: 12, padding: '6px 14px' }} onClick={e => { e.stopPropagation(); onEdit(p); }}>
+              Editar
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════
+   AGENT PROJECT EDITOR VIEW
+═══════════════════════════════════════════════════ */
+function AgentProjectEditorView({ project, service, user, onBack, onSaved }) {
+  const [form, setForm] = useState(() => project ? { ...emptyProject(service), ...project } : emptyProject(service));
+  const [saving, setSaving] = useState(false);
+  const [saveMsg, setSaveMsg] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef(null);
+  useLucide([form.status, !!form.image_url]);
+
+  const setF = (k, v) => setForm(f => ({ ...f, [k]: v }));
+
+  async function uploadImage(file) {
+    if (file.size > 5 * 1024 * 1024) { setSaveMsg('⚠️ La imagen no puede superar 5 MB.'); setTimeout(() => setSaveMsg(''), 3000); return; }
+    setUploading(true);
+    try {
+      const ext = file.name.split('.').pop().toLowerCase();
+      const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const { error: upErr } = await sb.storage.from('project-images').upload(path, file, { contentType: file.type });
+      if (upErr) throw upErr;
+      const { data: { publicUrl } } = sb.storage.from('project-images').getPublicUrl(path);
+      setF('image_url', publicUrl);
+    } catch (e) {
+      setSaveMsg('Error al subir: ' + e.message);
+      setTimeout(() => setSaveMsg(''), 4000);
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  async function save(publish = false) {
+    if (!form.title.trim() || !form.client.trim()) {
+      setSaveMsg('⚠️ Título y cliente son obligatorios.');
+      setTimeout(() => setSaveMsg(''), 3000);
+      return;
+    }
+    setSaving(true);
+    const payload = {
+      title: form.title.trim(), client: form.client.trim(),
+      industry: form.industry, summary: form.summary.trim(),
+      metric: form.metric.trim(), metric_label: form.metric_label.trim(),
+      image_url: form.image_url || null,
+      video_url: form.video_url || null,
+      service: form.service || service,
+      status: publish ? 'published' : (form.status === 'published' ? 'published' : 'draft'),
+      sort_order: parseInt(form.sort_order) || 0,
+    };
+    let error;
+    if (project?.id) {
+      ({ error } = await sb.from('agent_projects').update(payload).eq('id', project.id));
+    } else {
+      ({ error } = await sb.from('agent_projects').insert(payload));
+    }
+    setSaving(false);
+    if (error) {
+      setSaveMsg('Error: ' + error.message);
+    } else {
+      setSaveMsg(publish ? '¡Publicado!' : 'Guardado como borrador');
+      setTimeout(() => { setSaveMsg(''); onSaved(); }, 1400);
+    }
+  }
+
+  return (
+    <div style={{ maxWidth: 1400, margin: '0 auto', padding: '28px 24px' }}>
+      {/* Breadcrumb */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 24, flexWrap: 'wrap' }}>
+        <button onClick={onBack} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', color: 'var(--mayam-blue)', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-sans)', padding: 0 }}>
+          <Icon name="arrow-left" size={15} /> Volver
+        </button>
+        <span style={{ color: 'var(--border-strong)' }}>/</span>
+        <span style={{ fontSize: 13, color: 'var(--fg-muted)' }}>{project?.id ? 'Editar proyecto' : 'Nuevo proyecto'}</span>
+        {saveMsg && (
+          <span style={{ fontSize: 13, fontWeight: 600, marginLeft: 4, padding: '4px 10px', borderRadius: 6,
+            background: saveMsg.startsWith('⚠️') || saveMsg.startsWith('Error') ? '#fef2f2' : '#dcfce7',
+            color: saveMsg.startsWith('⚠️') || saveMsg.startsWith('Error') ? '#dc2626' : '#15803d' }}>{saveMsg}</span>
+        )}
+      </div>
+
+      <div className="editor-layout">
+        {/* Main */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+          {/* Imagen */}
+          <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 14, overflow: 'hidden' }}>
+            <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--border)', background: 'var(--neutral-050)', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <Icon name="image" size={14} style={{ color: 'var(--mayam-blue)' }} />
+              <span style={{ fontSize: 12, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--fg-muted)' }}>Imagen del proyecto</span>
+            </div>
+            <div style={{ padding: 20 }}>
+              {form.image_url ? (
+                <div key="img-preview" style={{ position: 'relative', marginBottom: 12 }}>
+                  <img src={form.image_url} alt="preview" style={{ width: '100%', maxHeight: 260, objectFit: 'cover', borderRadius: 10, display: 'block' }} onError={e => { e.target.style.display='none'; }} />
+                  <button onClick={() => setF('image_url', '')} style={{ position: 'absolute', top: 10, right: 10, width: 32, height: 32, borderRadius: '50%', background: 'rgba(0,0,0,0.65)', border: 'none', cursor: 'pointer', display: 'grid', placeItems: 'center', color: '#fff' }}>
+                    <Icon name="x" size={14} />
+                  </button>
+                </div>
+              ) : (
+                <div key="img-upload" onClick={() => !uploading && fileRef.current?.click()} style={{ border: '2px dashed var(--border-strong)', borderRadius: 10, padding: '40px 20px', textAlign: 'center', cursor: uploading ? 'wait' : 'pointer', marginBottom: 12 }}>
+                  <Icon name={uploading ? 'loader-circle' : 'upload-cloud'} size={32} style={{ margin: '0 auto 10px', display: 'block', color: 'var(--mayam-blue)' }} />
+                  <p style={{ margin: '0 0 4px', fontSize: 14, fontWeight: 600, color: 'var(--fg-strong)' }}>{uploading ? 'Subiendo imagen…' : 'Haz clic para subir imagen'}</p>
+                  <p style={{ margin: 0, fontSize: 12, color: 'var(--fg-muted)' }}>JPG, PNG o WebP · máx. 5 MB</p>
+                </div>
+              )}
+              <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif" style={{ display: 'none' }}
+                onChange={e => { if (e.target.files?.[0]) uploadImage(e.target.files[0]); e.target.value = ''; }} />
+              {!form.image_url && (
+                <div>
+                  <div style={{ textAlign: 'center', fontSize: 12, color: 'var(--fg-muted)', margin: '10px 0 8px' }}>— o pega una URL —</div>
+                  <input type="url" className="field-input" placeholder="https://…" value={form.image_url} onChange={e => setF('image_url', e.target.value)} />
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Datos del caso */}
+          <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 14, overflow: 'hidden' }}>
+            <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--border)', background: 'var(--neutral-050)', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <Icon name="briefcase" size={14} style={{ color: 'var(--mayam-blue)' }} />
+              <span style={{ fontSize: 12, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--fg-muted)' }}>Datos del caso de éxito</span>
+            </div>
+            <div style={{ padding: 20, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+              <div style={{ gridColumn: '1 / -1' }}>
+                <label className="sidebar-label">Título del caso *</label>
+                <input type="text" className="field-input" value={form.title} onChange={e => setF('title', e.target.value)} placeholder="BNITO Agente 24/7" />
+              </div>
+              <div>
+                <label className="sidebar-label">Cliente *</label>
+                <input type="text" className="field-input" value={form.client} onChange={e => setF('client', e.target.value)} placeholder="BNI México" />
+              </div>
+              <div>
+                <label className="sidebar-label">Industria</label>
+                <select className="field-input" value={form.industry} onChange={e => setF('industry', e.target.value)}>
+                  {INDUSTRIES.map(i => <option key={i} value={i}>{i}</option>)}
+                </select>
+              </div>
+              <div style={{ gridColumn: '1 / -1' }}>
+                <label className="sidebar-label">Resumen del caso</label>
+                <textarea className="field-input" rows={3} value={form.summary} onChange={e => setF('summary', e.target.value)} placeholder="Describe brevemente el resultado del proyecto…" />
+              </div>
+              <div>
+                <label className="sidebar-label">Métrica principal</label>
+                <input type="text" className="field-input" value={form.metric} onChange={e => setF('metric', e.target.value)} placeholder="−82%" />
+              </div>
+              <div>
+                <label className="sidebar-label">Etiqueta de métrica</label>
+                <input type="text" className="field-input" value={form.metric_label} onChange={e => setF('metric_label', e.target.value)} placeholder="tiempo de respuesta" />
+              </div>
+              <div>
+                <label className="sidebar-label">Orden de aparición (menor = primero)</label>
+                <input type="number" className="field-input" value={form.sort_order} onChange={e => setF('sort_order', e.target.value)} min={0} placeholder="0" />
+              </div>
+              <div>
+                <label className="sidebar-label">Sección (servicio)</label>
+                <input type="text" className="field-input" value={form.service || service} readOnly style={{ background: 'var(--neutral-050)', color: 'var(--fg-muted)', cursor: 'not-allowed' }} />
+              </div>
+              {(service === 'maquila-video' || form.video_url) && (
+                <div style={{ gridColumn: '1 / -1' }}>
+                  <label className="sidebar-label">URL video Instagram (Reel / Post)</label>
+                  <input type="url" className="field-input" value={form.video_url || ''} onChange={e => setF('video_url', e.target.value)} placeholder="https://www.instagram.com/reel/…" />
+                  <p style={{ fontSize: 11, color: 'var(--fg-muted)', margin: '6px 0 0' }}>Se mostrará como embed en la ventana modal del proyecto.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Sidebar */}
+        <div style={{ position: 'sticky', top: 80 }}>
+          <div className="sidebar-panel">
+            <div className="sidebar-section">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <button onClick={() => save(false)} className="btn btn-secondary" style={{ justifyContent: 'center', width: '100%' }} disabled={saving || uploading}>
+                  <Icon name="save" size={14} /> {saving ? 'Guardando…' : 'Guardar borrador'}
+                </button>
+                <button onClick={() => save(true)} className="btn btn-primary" style={{ justifyContent: 'center', width: '100%' }} disabled={saving || uploading}>
+                  <Icon name="globe" size={14} /> {form.status === 'published' ? 'Actualizar publicado' : 'Publicar'}
+                </button>
+              </div>
+            </div>
+            <div className="sidebar-section">
+              <label className="sidebar-label">Estado actual</label>
+              <StatusBadge status={form.status} />
+            </div>
+            {form.image_url && (
+              <div className="sidebar-section">
+                <label className="sidebar-label">Vista previa imagen</label>
+                <img src={form.image_url} alt="preview" style={{ width: '100%', height: 120, objectFit: 'cover', borderRadius: 8 }} onError={e => { e.target.style.display='none'; }} />
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════
+   APP PRINCIPAL
+═══════════════════════════════════════════════════ */
+function App() {
+  const [view, setView] = useState('loading');
+  const [section, setSection] = useState('blog');
+  const [user, setUser] = useState(null);
+  const [posts, setPosts] = useState([]);
+  const [editingPost, setEditingPost] = useState(null);
+  const [agentProjects, setAgentProjects] = useState([]);
+  const [editingProject, setEditingProject] = useState(null);
+
+  useEffect(() => {
+    sb.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) { setUser(session.user); setView('list'); fetchPosts(); }
+      else setView('login');
+    });
+    const { data: { subscription } } = sb.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN') {
+        setUser(session.user);
+        setView('list');
+        fetchPosts();
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null);
+        setView('login');
+      } else if (session?.user) {
+        setUser(session.user);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  async function fetchPosts() {
+    const { data } = await sb.from('blog_posts').select('*').order('created_at', { ascending: false });
+    if (data) setPosts(data);
+  }
+
+  async function fetchProjects(service) {
+    const { data } = await sb.from('agent_projects').select('*')
+      .eq('service', service)
+      .order('sort_order', { ascending: true })
+      .order('created_at', { ascending: false });
+    if (data) setAgentProjects(data);
+  }
+
+  function handleSectionChange(s) {
+    setSection(s);
+    if (s === 'blog') { setView('list'); fetchPosts(); }
+    else { setView('projects-list'); fetchProjects(s); }
+  }
+
+  async function handleTogglePublish(p) {
+    const newStatus = p.status === 'published' ? 'draft' : 'published';
+    const update = { status: newStatus };
+    if (newStatus === 'published' && !p.published_at) update.published_at = new Date().toISOString();
+    await sb.from('blog_posts').update(update).eq('id', p.id);
+    fetchPosts();
+  }
+
+  async function handleToggleFeatured(p) {
+    await sb.from('blog_posts').update({ featured: !p.featured }).eq('id', p.id);
+    fetchPosts();
+  }
+
+  async function handleDelete(p) {
+    if (!confirm(`¿Eliminar "${p.title}"? Esta acción no se puede deshacer.`)) return;
+    await sb.from('blog_posts').delete().eq('id', p.id);
+    fetchPosts();
+  }
+
+  async function handleToggleProjectPublish(p) {
+    await sb.from('agent_projects').update({ status: p.status === 'published' ? 'draft' : 'published' }).eq('id', p.id);
+    fetchProjects(section);
+  }
+
+  async function handleDeleteProject(p) {
+    if (!confirm(`¿Eliminar "${p.title}"? Esta acción no se puede deshacer.`)) return;
+    await sb.from('agent_projects').delete().eq('id', p.id);
+    fetchProjects(section);
+  }
+
+  async function handleSignOut() {
+    await sb.auth.signOut();
+    setView('login');
+  }
+
+  if (view === 'loading') return (
+    <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', background: 'var(--neutral-050)' }}>
+      <div style={{ textAlign: 'center', color: 'var(--fg-muted)' }}>
+        <img src="assets/logo-primary.png" alt="MAYAM" style={{ height: 36, margin: '0 auto 24px', opacity: 0.5 }} />
+        <p style={{ fontSize: 14 }}>Cargando editor…</p>
+      </div>
+    </div>
+  );
+
+  if (view === 'login') return <LoginView onLogin={u => { setUser(u); setView('list'); fetchPosts(); }} />;
+
+  return (
+    <div style={{ minHeight: '100vh' }}>
+      <EditorHeader
+        user={user}
+        onSignOut={handleSignOut}
+        onNewPost={() => {
+          if (section !== 'blog') { setEditingProject(null); setView('projects-editor'); }
+          else { setEditingPost(null); setView('editor'); }
+        }}
+        view={view}
+        section={section}
+        onSectionChange={handleSectionChange}
+      />
+      {view === 'list' && (
+        <PostListView
+          posts={posts}
+          onEdit={p => { setEditingPost(p); setView('editor'); }}
+          onDelete={handleDelete}
+          onTogglePublish={handleTogglePublish}
+          onToggleFeatured={handleToggleFeatured}
+        />
+      )}
+      {view === 'editor' && (
+        <PostEditorView
+          post={editingPost}
+          user={user}
+          onBack={() => { setView('list'); fetchPosts(); }}
+          onSaved={() => { setView('list'); fetchPosts(); }}
+        />
+      )}
+      {view === 'projects-list' && (
+        <AgentProjectsListView
+          projects={agentProjects}
+          service={section}
+          onEdit={p => { setEditingProject(p); setView('projects-editor'); }}
+          onDelete={handleDeleteProject}
+          onTogglePublish={handleToggleProjectPublish}
+          onSeed={() => fetchProjects(section)}
+        />
+      )}
+      {view === 'projects-editor' && (
+        <AgentProjectEditorView
+          project={editingProject}
+          service={section}
+          user={user}
+          onBack={() => { setView('projects-list'); fetchProjects(section); }}
+          onSaved={() => { setView('projects-list'); fetchProjects(section); }}
+        />
+      )}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
