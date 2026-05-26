@@ -251,7 +251,7 @@ function ProjectModal({ project, onClose }) {
         @media (max-width: 880px) {
           .project-modal { flex-direction: column !important; max-height: 92vh; overflow-y: auto; }
           .project-modal > div:first-child { flex: 0 0 auto !important; min-height: 240px !important; padding: 32px !important; }
-          .project-modal > div:last-child { padding: 32px !important; overflow-y: visible !important; }
+          .project-modal > div:last-child { flex: 0 0 auto !important; padding: 32px !important; overflow-y: visible !important; }
         }
       `}</style>
     </div>
